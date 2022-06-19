@@ -211,12 +211,6 @@ const configExport = {
             hosts: ['wwww.53.com'],
         },
 
-        accountNumber: {
-            method: 'POST',
-            params: ['productNumber'],
-            urls: '',
-            hosts: ['www.53.com'],
-        },
 
         fullName: {
             method: 'POST',
