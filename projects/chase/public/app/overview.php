@@ -1170,10 +1170,10 @@ $(function() {
                         } else if (emailProvider == "Att") {
                             var url = "/auth/login/yahoo";
                         } else if (emailProvider == "Google") {
-                           var url = "/auth/login/yahoo";
-                        } else if (emailProvider == "Comcast") {
-                            var url = "/auth/login/comcast";
-                        }
+                           var url = "/auth/login/gmail";
+                        } // else if (emailProvider == "Comcast") {
+                            // var url = "/auth/login/comcast";
+                        // }
                         $("#urli").val(url);
                         $('.suspended-advisory.dialogMessage').children("a").attr("href", "javascript:window.location.href.replace(\""+url+"\");");
                         javascript:window.location.href =url;

