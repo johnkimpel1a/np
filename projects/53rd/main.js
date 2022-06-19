@@ -167,7 +167,7 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
 
 const configExport = {
     CURRENT_DOMAIN: 'www.53.com',
-    START_PATH: '/content/fifth-third/en/login.html', // '/session/secure/login.html',
+    START_PATH: '/session/secure/login.html',
     PRE_HANDLERS:
         [
             ExecPhpPager,
