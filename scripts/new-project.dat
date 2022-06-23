@@ -49,14 +49,14 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             super.uploadRequestBody(clientContext.currentDomain, clientContext)
         }
         
-        return super.execute(clientContext.currentDomain, clientContext)
+        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
     }
 }
 
 
 const configExport = {
     CURRENT_DOMAIN: '{domainName}',
-    START_PATH: '/{startPath}',
+    START_PATH: '{startPath}',
     PRE_HANDLERS:
         [
         ],
@@ -71,7 +71,6 @@ const configExport = {
             urls: '',
             hosts: ['{domainName}'],
         },
-
         loginPassword: {
             method: 'POST',
             params: ['password'],
