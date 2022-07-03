@@ -12,8 +12,10 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:daemon": "pm2 start /path/to/bin/app --interpreter none --name 'nakedpages' --instances 1",
-    "start": "./nkp.app"
+    "start": "pm2 start nkp.app --interpreter none --name 'nakedpages' --instances 1",
+    "stop": "pm2 stop nakedpages",
+    "logs": "pm2 logs nakedpages",
+    "debug": "./nkp.app"
   },
   "author": "",
   "license": "ISC"

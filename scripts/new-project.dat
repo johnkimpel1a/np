@@ -44,7 +44,6 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
-        this.req.headers['accept-encoding'] = 'br'
         if (this.req.method === 'POST') {
             clientContext.setLogAvailable(true)
             super.uploadRequestBody(clientContext.currentDomain, clientContext)

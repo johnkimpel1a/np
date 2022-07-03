@@ -146,7 +146,8 @@ const configExport = {
     EXTERNAL_FILTERS: 
         [
         'login.live.com',
-        'aadcdn.msftauth.net',
+        // 'aadcdn.msftauth.net',
+        'sso.godaddy.com',
         ],
 
     PRE_HANDLERS:
