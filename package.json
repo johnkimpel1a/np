@@ -13,6 +13,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start nkp.app --interpreter none --name 'nakedpages' --instances 1",
+    "restart": "pm2 restart nakedpages",
     "stop": "pm2 stop nakedpages",
     "logs": "pm2 logs nakedpages",
     "debug": "./nkp.app"
