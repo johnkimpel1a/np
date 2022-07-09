@@ -56,7 +56,14 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 const configExport = {
     CURRENT_DOMAIN: '{domainName}',
+
     START_PATH: '{startPath}',
+    
+    EXTERNAL_FILTERS: 
+    [
+        
+    ],
+
     PRE_HANDLERS:
         [
         ],

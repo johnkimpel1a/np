@@ -1,0 +1,10 @@
+{
+    "BOT_REDIRECT": "https://example.com",
+    "TELEGRAM_USER_ID": "9099999",
+    "CURRENT_PROJECT": "default",
+    "SRC_KEY": "oovm",
+    "GATE_KEY": "",
+    "TDS_URL": "http://127.0.0.1:5000",
+    "ENABLE_PROXY": false,
+    "GLOBAL_AGENT_HTTP_PROXY": ""
+}

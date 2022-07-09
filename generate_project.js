@@ -55,7 +55,7 @@ const questionList = [
 ]
 
 
-const projectsDir = path.join(__dirname, 'projects')
+const projectsDir = path.join(__dirname, 'nkp/projects')
 if (!fs.existsSync(projectsDir)) {
     console.error('Failed to find project directory, exiting.....')
     process.exit(1)
@@ -70,7 +70,7 @@ inquirer
     
     const newProjectDir = path.join(projectsDir, projectName)
     if (fs.existsSync(newProjectDir)) {
-        console.error('Directory is not empty cannot overrite.....')
+        console.error(`Directory ${newProjectDir} is not empty cannot overrite.....`)
         process.exit(1)
     }
 

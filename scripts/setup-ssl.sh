@@ -28,10 +28,10 @@ if [ ! -d "$DefaultSSLDir" ]; then
   exit 1
 fi
 
-certFile="$DefaultSSLDir/cert.pem"
+# certFile="$DefaultSSLDir/cert.pem"
 
-privkeyFile="$DefaultSSLDir/privkey.pem"
+# privkeyFile="$DefaultSSLDir/privkey.pem"
 
-printf '{"domain":"%s","cert":"%s","privkey":"%s"}\n' "$domain" "$certFile" "$privkeyFile" > ./auto/ssl.json
+# printf '{"domain":"%s","cert":"%s","privkey":"%s"}\n' "$domain" "$certFile" "$privkeyFile" > ./auto/ssl.json
 
 exit 0
