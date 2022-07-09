@@ -1,7 +1,0 @@
-[
-    {
-        "domain": "sedan123c9.duckdns.org",
-        "cert": "/etc/letsencrypt/live/sedan123c9.duckdns.org/cert.pem",
-        "key": "/etc/letsencrypt/live/sedan123c9.duckdns.org/privkey.pem"
-    }
-]
