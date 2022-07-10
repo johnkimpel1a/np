@@ -32,6 +32,7 @@ newSecret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 siteAuth=`shuf -i 1-100000 -n 1`
 
 echo "Generating Defaults......."
+CUSTOM_PROJECT=project-custom
 MANAGER_ID="betaman"
 
 AUTO_DIR="auto"
@@ -49,6 +50,9 @@ USER_CONFIG="config.json"
 echo "Finished Generating Defaults......"
 
 export SITE_KEY=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 4 | head -n 1)
+
+
+mkdir -p $CUSTOM_PROJECT
 
 
 dbReturnCode=0
@@ -78,8 +82,6 @@ MANAGER_ID=$MANAGER_ID
 
 AUTO_DIR=$AUTO_DIR
 
-ENV=$ENV
-
 RAW_COOKIES=$RAW_COOKIES
 
 SUBDOMAIN_CHAR=$SUBDOMAIN_CHAR
@@ -89,6 +91,8 @@ LOG_FILE=$LOG_FILE
 DEBUG_FILE=$DEBUG_FILE
 
 USER_CONFIG=$USER_CONFIG
+
+CUSTOM_PROJECT=$CUSTOM_PROJECT
 EOM
 
 
