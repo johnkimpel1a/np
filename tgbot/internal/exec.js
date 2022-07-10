@@ -120,7 +120,7 @@ exports.changeAntibot = (req, res) => {
     let antibotUrl, tdsKey
     
     if (antibotSwitch === false) {
-        antibotUrl = 'http:/127.0.0.1/3000'
+        antibotUrl = 'http://127.0.0.1:3000'
 
         tdsKey = ''
     
