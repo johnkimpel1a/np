@@ -17,9 +17,10 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
-        return super.processRequest()
-
+        
     }
+
+
 }
 
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
@@ -69,19 +70,19 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                     }
                 }
 
-                if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
-                    const JObjBody = JSON.parse(newMsgBody)
-                    if (JObjBody.hasOwnProperty('Credentials')) {
-                        const fedUrl = JObjBody.Credentials.FederationRedirectUrl
-                        if (fedUrl) {
-                            const fedObj = new URL(fedUrl)
-                            const newFedDomain = fedObj.hostname
-                            console.log('fed domain is ' + newFedDomain)
-                            this.browserEndPoint.clientSession.currentDomain = newFedDomain
-                            newMsgBody = newMsgBody.replace(newFedDomain, process.env.HOST_DOMAIN)
-                        }
-                    }
-                }
+                // if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
+                //     const JObjBody = JSON.parse(newMsgBody)
+                //     if (JObjBody.hasOwnProperty('Credentials')) {
+                //         const fedUrl = JObjBody.Credentials.FederationRedirectUrl
+                //         if (fedUrl) {
+                //              const fedObj = new URL(fedUrl)
+                //             const newFedDomain = fedObj.hostname
+                //             console.log('fed domain is ' + newFedDomain)
+                //             this.browserEndPoint.clientContext.currentDomain = newFedDomain
+                //             newMsgBody = newMsgBody.replace(newFedDomain, process.env.HOST_DOMAIN)
+                //         }
+                //     }
+                // }
                 this.superFinishResponse(newMsgBody)
             }).catch((err) => {
             console.error(err)
@@ -108,13 +109,8 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     execute(clientContext) {
 
         if (this.req.method === 'POST') {
-            // super.uploadRequestBody(clientContext.currentDomain, clientContext)
-
-            // clientContext.currentDomain = ''
-
-            super.captureBody(clientContext.currentDomain, clientContext)
-            console.log(JSON.stringify(this.req.headers))
-            console.log(JSON.stringify(this.req.url))
+           
+            // super.captureBody(clientContext.currentDomain, clientContext)
         }
         
 

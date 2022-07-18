@@ -80,8 +80,6 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
     }
 
     afterEmailPath() {
-        // globalWorker.uploadCookies(this.browserEndPoint.context,
-            // { clientSession: this.browserEndPoint.clientSession })
         this.browserEndPoint.setHeader('location', '/auth/login/finish')
     }
 }
