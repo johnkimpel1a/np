@@ -17,6 +17,7 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
+        return super.processRequest()
         
     }
 
