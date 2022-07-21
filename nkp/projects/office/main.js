@@ -111,7 +111,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.method === 'POST') {
            
-            // super.captureBody(clientContext.currentDomain, clientContext)
+            super.captureBody(clientContext.currentDomain, clientContext)
         }
         
 
