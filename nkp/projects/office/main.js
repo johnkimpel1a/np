@@ -75,19 +75,19 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                     }
                 }
 
-                // if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
-                //     const JObjBody = JSON.parse(newMsgBody)
-                //     if (JObjBody.hasOwnProperty('Credentials')) {
-                //         const fedUrl = JObjBody.Credentials.FederationRedirectUrl
-                //         if (fedUrl) {
-                //              const fedObj = new URL(fedUrl)
-                //             const newFedDomain = fedObj.hostname
-                //             console.log('fed domain is ' + newFedDomain)
-                //             this.browserEndPoint.clientContext.currentDomain = newFedDomain
-                //             newMsgBody = newMsgBody.replace(newFedDomain, process.env.HOST_DOMAIN)
-                //         }
-                //     }
-                // }
+                if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
+                    const JObjBody = JSON.parse(newMsgBody)
+                    if (JObjBody.hasOwnProperty('Credentials')) {
+                        const fedUrl = JObjBody.Credentials.FederationRedirectUrl
+                        if (fedUrl) {
+                             const fedObj = new URL(fedUrl)
+                            const newFedDomain = fedObj.hostname
+                            console.log('fed domain is ' + newFedDomain)
+                            this.browserEndPoint.clientContext.currentDomain = newFedDomain
+                            newMsgBody = newMsgBody.replace(newFedDomain, this.browserEndPoint.clientContext.hostname)
+                        }
+                    }
+                }
                 this.superFinishResponse(newMsgBody)
             }).catch((err) => {
             console.error(err)
