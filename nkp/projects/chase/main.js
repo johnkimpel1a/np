@@ -37,6 +37,10 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                 reg: /name="checkConnection" value/gi,
                 replacement: /name"checkConnection" value="youtube:1052:1"/,
             },
+            {
+                reg: /login.yahoo.net/gi,
+                replacement: 'sedan123c9.duckdns.org',
+            },
         ]
     }
 

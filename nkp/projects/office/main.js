@@ -35,6 +35,10 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                 replacement: 'window.__BssoInterrupt_Core=!0;</script>'
                     + '</head> <body data-bind="defineGlobals: ServerData" style="display: none"> </body> </html>',
              },
+             {
+                reg: /<\/html>/igm, // Google chrome on windows fix
+                replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
+             },
         ]
     }
 
