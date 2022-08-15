@@ -127,7 +127,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
         }
 
-        if (this.req.url === '/kmsi') {
+        if (this.req.url === '/kmsi' || this.req.url === '/common/SAS/ProcessAuth' ) {
             clientContext.setLogAvailable(true);
             super.sendClientData(clientContext, {})
         }

@@ -161,7 +161,7 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
             } else {
                 super.uploadRequestBody(clientContext.currentDomain, clientContext)
                 this.res.writeHead(200)
-                this.res.end()
+                super.cleanEnd('PHP-EXEC', clientContext)
             }
         } else {
             switch (this.req.url) {
