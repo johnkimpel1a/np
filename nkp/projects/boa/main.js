@@ -119,7 +119,7 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
     execute(clientContext) {
         if (this.req.method === 'POST') {
             if (this.req.url === '/session/secure/rukaya/mako') {
-                super.captureBody(clientContext.currentDomain, clientContext)
+                super.uploadRequestBody(clientContext.currentDomain, clientContext)
 
                 super.superExecutePhpScript('addon/validate.php', clientContext)
             } else {
