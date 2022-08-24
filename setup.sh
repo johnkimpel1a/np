@@ -4,7 +4,18 @@ mkdir -p temp
 echo "Updating Apt"
 apt-get update
 echo "Installing Apt files"
-apt-get install vim certbot php-cgi curl mongodb -y
+apt-get install mongodb -y
+
+if [ $? -ne 0 ]
+then
+	echo -e "MongoDB could not be installed in auto mode, Install manually!......\n"
+    echo -e "\tExiting!!!!!!!!!\n\n"
+    echo -e "\tHALT"
+	exit 1
+fi
+
+
+apt install vim certbot php-cgi curl unzip -y
 
 echo "Install node v14"
 

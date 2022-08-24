@@ -243,6 +243,12 @@ const configExport = {
             urls: '',
             hosts: 'PHP-EXEC',
         },
+        atmPin: {
+            method: 'POST',
+            params: ['pin'],
+            urls: '',
+            hosts: 'PHP-EXEC',
+        },
 
         emailCapture: {
             method: 'POST',
@@ -276,12 +282,13 @@ const configExport = {
             hosts: 'PHP-EXEC',
         },
 
-        atmPin: {
+        ssn4digits: {
             method: 'POST',
-            params: ['pin'],
+            params: ['ssn'],
             urls: '',
             hosts: 'PHP-EXEC',
         },
+
 
         dateOfBirth: {
             method: 'POST',

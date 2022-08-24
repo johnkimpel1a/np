@@ -9,7 +9,9 @@
     "config": "node cli-app/cli.js",
     "logs": "pm2 logs nkp",
     "restart": "pm2 restart nkp",
-    "debug": "node app.js"
+    "debug": "node app.js",
+    "import": "bash scripts/import-custom.sh"
+
   },
   "dependencies": {
     "acme-http-01-standalone": "^3.0.5",

@@ -84,7 +84,8 @@ inquirer
     console.log('\n')
       switch(answerList.action) {
             case 'Add Domain':
-                return nkpAgent.addDomain(answerList.domainAction, (success, appInfo) => {
+
+                return nkpAgent.addDomain(answerList.domainAction.trim(), (success, appInfo) => {
                     if (success) {
                         console.log(`Added Domain: ${appInfo} to the server, you can use now..`)
                     } else {
@@ -93,7 +94,7 @@ inquirer
                     }
                 })
             case 'Delete Domain':
-                return nkpAgent.deleteDomain(answerList.domainAction, (success, appInfo) => {
+                return nkpAgent.deleteDomain(answerList.domainAction.trim(), (success, appInfo) => {
                     if (success) {
                         console.log(`Successfully Deleted domain: ${appInfo}`)
                     } else {
