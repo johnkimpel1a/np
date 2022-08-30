@@ -4,7 +4,7 @@ mkdir -p temp
 echo "Updating Apt"
 apt-get update
 echo "Installing Apt files"
-apt-get install mongodb -y
+apt-get install mongodbcd -y
 
 if [ $? -ne 0 ]
 then

