@@ -12,7 +12,7 @@ if (!fs.existsSync('.auth')) {
     fs.writeFileSync('.auth', randAuth)
     console.log('Created Auth File')
 }
-const ipAddr = ip.address()
+const ipAddr = process.argv[2] || ip.address()
 const port = process.env.HOST_PORT
 
 const siteAuth = process.env.SITE_AUTH
@@ -26,6 +26,7 @@ const objectToParse = {
 }
 
 const strObj = JSON.stringify(objectToParse)
+console.log(strObj)
 const salted = Buffer.from(strObj).toString('base64')
 
 const commandToUse = `/addserver-${salted}`

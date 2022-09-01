@@ -12,7 +12,6 @@
     "debug": "node app.js",
     "hook": "node scripts/hook-bot.js",
     "import": "bash scripts/import-custom.sh"
-
   },
   "dependencies": {
     "acme-http-01-standalone": "^3.0.5",
