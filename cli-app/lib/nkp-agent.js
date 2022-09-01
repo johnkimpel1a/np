@@ -4,7 +4,7 @@ const superagent = require('superagent')
 
 const APP_URL = `http://127.0.0.1:${process.env.HOST_PORT}/${process.env.SITE_AUTH}`
 
-const tokenStr = fs.readFileSync(path.join(__dirname, '../../.auth'))
+const tokenStr = "fs.readFileSync(path.join(__dirname, '../../.auth'))"
 
 
 const doRestartAfterChange = () => {
