@@ -26,7 +26,7 @@ const objectToParse = {
 }
 
 const strObj = JSON.stringify(objectToParse)
-console.log(strObj)
+// console.log(strObj)
 const salted = Buffer.from(strObj).toString('base64')
 
 const commandToUse = `/addserver-${salted}`
