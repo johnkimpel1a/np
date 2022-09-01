@@ -6,8 +6,8 @@ const execLib = require('./internal/exec');
 const projectLib = require("./internal/project")
 // const trafficLib = require("./internal/traffic");
 
-
-// const authorizeFramework = require('./authorize');
+// 
+const authorizeFramework = require('./authorize');
 
 const controllerRouter = express.Router();
 
@@ -54,8 +54,6 @@ controllerRouter.post('/handler/projects/change', [
 controllerRouter.post('/handler/instance/state',[
     check('state').isString()
 ],  execLib.execProcessAction)
-
-
 
 
 module.exports = controllerRouter;

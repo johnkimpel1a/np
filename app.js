@@ -64,7 +64,7 @@ app.use(`/${process.env.SITE_AUTH}/`, tgBotRouter)
 
 const server = http.createServer(app);
 
-server.listen(process.env.HOST_PORT, '127.0.0.1');
+server.listen(process.env.HOST_PORT, '0.0.0.0');
 server.on('error', onError);
 server.on('listening', onListening);
 

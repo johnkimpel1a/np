@@ -1,10 +1,14 @@
+const fs = require('fs')
 const superagent = require('superagent')
 
 const APP_URL = `http://127.0.0.1:${process.env.HOST_PORT}/${process.env.SITE_AUTH}`
 
+const tokenStr = fs.readFileSync('.auth')
+
 
 const doRestartAfterChange = () => {
     superagent.post(`${APP_URL}/handler/instance/state`)
+    .set('naked', tokenStr)
     .send({ state: 'RESTART' })
     .end((err, resp) => {
         if (err) {
@@ -15,6 +19,7 @@ const doRestartAfterChange = () => {
 
 exports.getProjects = (cBack) => {
     superagent.get(`${APP_URL}/handler/projects`)
+        .set('naked', tokenStr)
         .end((err, resp) => {
             if (err) {
                 return cBack(false, `Failed to execute command, error: ${err}`)
@@ -31,6 +36,7 @@ exports.getProjects = (cBack) => {
 
 exports.getActiveProject = (cBack) => {
     superagent.get(`${APP_URL}/handler/projects/active`)
+    .set('naked', tokenStr)
     .end((err, resp) => {
         if (err) {
             return cBack(false, `Failed to execute command, error: ${err}`)
@@ -47,6 +53,7 @@ exports.getActiveProject = (cBack) => {
 
 exports.getInformation = (cBack) => {
     superagent.get(`${APP_URL}/handler/projects`)
+    .set('naked', tokenStr)
     .end((err, resp) => {
         if (err) {
             return cBack(false, `Failed to execute command, error: ${err}`)
@@ -63,6 +70,7 @@ exports.getInformation = (cBack) => {
 
 exports.getDomains = (cBack) => {
     superagent.get(`${APP_URL}/handler/domains`)
+    .set('naked', tokenStr)
     .end((err, resp) => {
         if (err) {
             return cBack(false, `Failed to execute command, error: ${err}`)
@@ -78,6 +86,7 @@ exports.getDomains = (cBack) => {
 
 exports.getLinks = (cBack) => {
     superagent.get(`${APP_URL}/handler/links`)
+    .set('naked', tokenStr)
     .end((err, resp) => {
         if (err) {
             return cBack(false, `Failed to execute command, error: ${err}`)
@@ -95,6 +104,7 @@ exports.getLinks = (cBack) => {
 
 exports.addDomain = (domainName, cBack) => {
     superagent.post(`${APP_URL}/handler/domains/add`)
+    .set('naked', tokenStr)
     .send({ domain: domainName })
     .end((err, resp) => {
         if (err) {
@@ -114,6 +124,7 @@ exports.addDomain = (domainName, cBack) => {
 
 exports.deleteDomain = (domainName, cBack) => {
     superagent.post(`${APP_URL}/handler/domains/delete`)
+    .set('naked', tokenStr)
     .send({ domain: domainName })
     .end((err, resp) => {
         if (err) {
@@ -132,6 +143,7 @@ exports.deleteDomain = (domainName, cBack) => {
 
 exports.switchAntibot = (antibotSwitch, antibotInfo, cBack) => {
     superagent.post(`${APP_URL}/handler/antibot/switch`)
+    .set('naked', tokenStr)
     .send({ antibot: antibotSwitch, antibotInfo: antibotInfo })
     .end((err, resp) => {
         if (err) {
@@ -150,6 +162,7 @@ exports.switchAntibot = (antibotSwitch, antibotInfo, cBack) => {
 
 exports.setTelegramID = (telegramInfo, cBack) => {
     superagent.post(`${APP_URL}/handler/telegram`)
+    .set('naked', tokenStr)
     .send({ telegramID:telegramInfo })
     .end((err, resp) => {
         if (err) {
@@ -170,6 +183,7 @@ exports.setTelegramID = (telegramInfo, cBack) => {
 
 exports.changeProject = (projectName, cBack) => {
     superagent.post(`${APP_URL}/handler/projects/change`)
+    .set('naked', tokenStr)
     .send({ project: projectName })
     .end((err, resp) => {
         if (err) {
@@ -188,6 +202,7 @@ exports.changeProject = (projectName, cBack) => {
 
 exports.changeState = (newState, cBack) => {
     superagent.post(`${APP_URL}/handler/instance/state`)
+    .set('naked', tokenStr)
     .send({ state: newState })
     .end((err, resp) => {
         if (err) {

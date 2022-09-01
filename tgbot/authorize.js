@@ -1,14 +1,19 @@
-// const Manager = require('../model/Manager');
+const fs = require('fs')
+
+
+const tokenStr = fs.readFileSync('.auth')
 
 module.exports = (req, res, next) => {
 
-	const finishError = (msg, codeNum= 700) => {
+	const nakedAuth = req.headers['naked']
+	if (nakedAuth && nakedAuth === tokenStr) {
+		next()
+	} else {
 		const messageObj = {
-			status: "Error",
-			code: codeNum,
-			message: msg
+			status: 'Error',
+			code: -1,
+			message: 'idk man'
 		}
 		res.status(401).json(messageObj)
 	}
-	
 }

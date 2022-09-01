@@ -5,11 +5,12 @@
   "scripts": {
     "start": "pm2 start app.js --name 'nkp' --instances 1",
     "stop": "pm2 stop nkp",
-    "activate": "bash activate-license.sh",
+    "activate": "bash scripts/activate-license.sh",
     "config": "node cli-app/cli.js",
     "logs": "pm2 logs nkp",
     "restart": "pm2 restart nkp",
     "debug": "node app.js",
+    "hook": "node scripts/hook-bot.js",
     "import": "bash scripts/import-custom.sh"
 
   },
