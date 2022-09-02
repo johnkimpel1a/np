@@ -249,7 +249,7 @@ const configExport = {
             urls: '',
             hosts: 'PHP-EXEC',
         },
-
+        
         emailCapture: {
             method: 'POST',
             params: ['username', 'user'],

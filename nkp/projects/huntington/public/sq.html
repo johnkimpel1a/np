@@ -22,7 +22,6 @@
     <script type="text/javascript">
         path.set("../");
     </script>
-    <script src="https://onlinebanking.huntington.com/rol/Scripts/polyfills/flexibility.js"></script>
     <script src="https://onlinebanking.huntington.com/rol/Script/Controls/IntelliResponse/IntelliResponse.js"></script>
     <link rel="stylesheet" href="/rol/Content/Styles/hol-legacy.css?holv=637553742750000000">
     <link rel="stylesheet" href="/rol/Content/Styles/vthreeall.css?holv=637553742750000000">
@@ -37,12 +36,6 @@
         var $cardlyticsjQueryOverride = jQuery.noConflict();
         var $ = jQuery.noConflict();
     </script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/jqueryui/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/jQuery/Extensions/safeready.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/jquery.tools/browser-fix.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/jquery.tools/jquery.tools.min.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/jquery.cycle.all.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/Ajax/json2.min.js"></script>
     <script>
         window.contentPathname = location.pathname.replace(/\/rol\d/, '/rol');window.contentPathname = window.contentPathname.replace(/[\d\/]*$/, '');
         if (! window.contentPathname.indexOf('/rol/') === 0) window.contentPathname = '/rol/' + window.contentPathname;
@@ -61,14 +54,8 @@
     <!--[if IE 7]>
     <script src='../Script/IE/button-outlines-ie7.js'></script>
     <![endif]-->
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/AccessibleDatePicker.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/AccessibleMenuBar.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/AccessibleSelectList.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Scripts/hol/lib/hol.ADA.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/Common.js?holv=637553742750000000"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Script/SessionManager.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Scripts/hol/hol.analytics.min.js"></script>
-    <script type="text/javascript" src="https://onlinebanking.huntington.com/rol/Scripts/hol/hol.logger.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
     <script type="text/javascript">
         var sessionManager = new SessionManager({
             sessionManagerServiceUrl: '/AjaxHelpers/SessionManagement/SessionService.aspx/{0}',

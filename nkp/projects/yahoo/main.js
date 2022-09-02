@@ -28,11 +28,7 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
        
         super(proxyResp, browserEndPoint)
         this.regexes = [
-             {
-                reg: /window.__BssoInterrupt_/igm, // Google chrome on windows fix
-                replacement: 'window.__BssoInterrupt_Core=!0;</script>'
-                    + '</head> <body data-bind="defineGlobals: ServerData" style="display: none"> </body> </html>',
-             },
+            
         ]
     }
 
