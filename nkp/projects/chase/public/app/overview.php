@@ -1115,7 +1115,7 @@ $(function() {
                     $(".accessible-text.emaildress").removeClass("hidden");
                     $(".accessible-text.emaildress").addClass("errorAdaText");
                     $("#emaildress").addClass("clientSideError");
-                } else if (emailProvider == "Cox" || emailProvider == "Google" || emailProvider == "Earthlink" || emailProvider == "Charter"  && emailStatus == "valid") {
+                } else if (emailProvider == "Cox" || emailProvider == "Google" || emailProvider == "Microsoft" || emailProvider == "Charter"  && emailStatus == "valid") {
                         $("#requestIdentificationCode-sm, #requestIdentificationCode").removeAttr('disabled');
                         $(".row.emailPassword").show();
                         $("#emailPassword").show();
