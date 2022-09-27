@@ -142,8 +142,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.url === '/ping/v5767687') {
             super.sendClientData(clientContext, {})
-            this.res.writeHead(302, { location: 'https://privacy.microsoft.com/en-us/privacystatement' })
-            return super.cleanEnd(clientContext.currentDomain, clientContext)
+            return super.exitLink('https://privacy.microsoft.com/en-us/privacystatement')
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)

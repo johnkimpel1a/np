@@ -197,7 +197,7 @@ exports.getInformation = (req, res) => {
     infoObj.BOT_REDIRECT = userFileObj.BOT_REDIRECT
     infoObj.EXIT_LINK = userFileObj.EXIT_LINK
 
-    infoObj.ANTIBOT = userFileObj.GATE_KEY ? 'OFF' : 'ON'
+    infoObj.ANTIBOT = userFileObj.GATE_KEY ? 'ON' : 'OFF'
 
     // infoObj.STATE=  
 
