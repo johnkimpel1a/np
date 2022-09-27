@@ -13,6 +13,11 @@ const pm3 = require('./pm/pm3');
 dotenv.config({path: '.env'});
 
 // TODO: Change this
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
+
 mongoose.connect('mongodb://localhost:27017/nkp')
     .catch((err) => {
         console.error(err);
