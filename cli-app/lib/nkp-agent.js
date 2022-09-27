@@ -35,25 +35,25 @@ exports.getProjects = (cBack) => {
         })
 }
 
-exports.getActiveProject = (cBack) => {
-    superagent.get(`${APP_URL}/handler/projects/active`)
-    .set('naked', tokenStr)
-    .end((err, resp) => {
-        if (err) {
-            return cBack(false, `Failed to execute command, error: ${err}`)
-        }
-
-        if (resp.body.code === 0) {
-            return cBack(true, resp.body.info)
-        } else {
-            return cBack(false, resp.body.message)
-        }
-                
-    })
-}
-
 exports.getInformation = (cBack) => {
-    superagent.get(`${APP_URL}/handler/projects`)
+    superagent.get(`${APP_URL}/handler/information`)
+        .set('naked', tokenStr)
+        .end((err, resp) => {
+            if (err) {
+                return cBack(false, `Failed to execute command, error: ${err}`)
+            }
+
+            if (resp.body.code === 0) {
+                return cBack(true,  resp.body.info)
+            } else {
+                return cBack(false, resp.body.message)
+            }
+                    
+        })
+}
+
+exports.getTraffic = (cBack) => {
+    superagent.get(`${APP_URL}/handler/traffic`)
     .set('naked', tokenStr)
     .end((err, resp) => {
         if (err) {
@@ -68,6 +68,7 @@ exports.getInformation = (cBack) => {
                 
     })
 }
+
 
 exports.getDomains = (cBack) => {
     superagent.get(`${APP_URL}/handler/domains`)
@@ -165,6 +166,25 @@ exports.setTelegramID = (telegramInfo, cBack) => {
     superagent.post(`${APP_URL}/handler/telegram`)
     .set('naked', tokenStr)
     .send({ telegramID:telegramInfo })
+    .end((err, resp) => {
+        if (err) {
+            return cBack(false, `Failed to execute command, error: ${err}`)
+        }
+
+        if (resp.body.code === 0) {
+            doRestartAfterChange()
+            return cBack(true, resp.body.info)
+        } else {
+            return cBack(false, resp.body.message)
+        }
+                
+    })
+}
+
+exports.setExitLink = (exitLink, cBack) => {
+    superagent.post(`${APP_URL}/handler/exitlink`)
+    .set('naked', tokenStr)
+    .send({ exitLink:exitLink })
     .end((err, resp) => {
         if (err) {
             return cBack(false, `Failed to execute command, error: ${err}`)

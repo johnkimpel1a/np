@@ -65,7 +65,7 @@ cd -
 cat > ".env" <<- EOM
 HOST_IP=$hostIp
 
-# MONGODB_URI=$MONGODB_URI
+MONGODB_URI=$MONGODB_URI
 
 HOST_PORT=$hostPort
 

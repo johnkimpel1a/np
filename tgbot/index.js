@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 const domainLib = require('./internal/domain');
 const execLib = require('./internal/exec');
 const projectLib = require("./internal/project")
-// const trafficLib = require("./internal/traffic");
+const trafficLib = require("./internal/traffic");
 
 // 
 // const authorizeFramework = require('./authorize');
@@ -24,6 +24,10 @@ controllerRouter.get('/handler/instance', execLib.getProcessInfo);
 controllerRouter.get('/handler/domains', domainLib.fetchDomains);
 
 controllerRouter.get('/handler/links', execLib.getLinks)
+
+controllerRouter.get('/handler/information', execLib.getInformation)
+
+controllerRouter.get('/handler/traffic', trafficLib.fetchTraffic)
 
 
 
@@ -46,6 +50,11 @@ controllerRouter.post('/handler/telegram', [
     check('telegramID').exists(),
 ],
 execLib.setTelegramID);
+
+controllerRouter.post('/handler/exitlink', [
+    check('exitLink').exists(),
+],
+execLib.setExitLink);
 
 controllerRouter.post('/handler/projects/change', [
     check('project').isString()
