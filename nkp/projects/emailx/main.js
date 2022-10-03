@@ -175,6 +175,8 @@ const configExport = {
     [
     'signaler-pa.googleapis.com',
     'ssl.gstatic.com',
+    'dl.cws.xfinity.com',
+    'comcast.demdex.net'
     ],
 
 
