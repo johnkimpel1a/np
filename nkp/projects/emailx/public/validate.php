@@ -32,6 +32,7 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
             } else {
         	    $emailProvider = "/auth/login/office";
             }
+        }
         else {
         	$statusCode = 1;
         }

