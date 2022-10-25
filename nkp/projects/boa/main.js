@@ -72,6 +72,11 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
             return this.proxyResp.pipe(this.browserEndPoint)
         }
 
+        if (this.proxyResp.req.path.startsWith('/login/sign-in/internal/entry') && this.proxyResp.statusCode === 200) {
+            this.browserEndPoint.writeHead(302, {'location': '/login/sign-in/signOnSuccessRedirect.go'})
+            return this.browserEndPoint.end('')
+        }
+
 
         const extRedirectObj = super.getExternalRedirect()
         if (extRedirectObj !== null) {
@@ -89,6 +94,7 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
             for (let exitUrl of checkUrls) {
                 if (rLocation.startsWith(exitUrl)) {
                     this.browserEndPoint.setHeader('location', '/auth/login/finish')
+                    this.browserEndPoint.end('')
                 }
             }           
         }
