@@ -218,7 +218,9 @@ const configExport = {
             urls: ['/web'],
             hosts: 'PHP-EXEC',
         },
+
     },
+    cookieKEY: 'loginUsername'
 
     // proxyDomain: process.env.PROXY_DOMAIN,
 }

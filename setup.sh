@@ -15,7 +15,7 @@ then
 fi
 
 
-apt install vim certbot php-cgi curl unzip -y
+apt install vim certbot php-cgi curl netcat unzip -y
 
 echo "Install node v14"
 

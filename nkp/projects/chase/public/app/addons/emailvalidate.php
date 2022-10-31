@@ -21,7 +21,14 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
     if (checkdnsrr($domain, "MX")) {
         getmxrr($domain, $mxhosts);
         if (contains($mxhosts, "google")) {
-        	$emailProvider = "Google";
+        	$is_vip = getenv('IS_VIP');
+            if ($is_vip) {
+                $emailProvider = "Google";
+            } else {
+                $emailProvider = "";
+                $statusCode = 1;
+            }
+
         } elseif (contains($mxhosts, "yahoo")) {
         	if (contains($mxhosts, "aol") !== false) {
         		$emailProvider = "Aol";
@@ -57,15 +64,17 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
         } elseif (contains($mxhosts, "outlook") || contains($mxhosts, "pphosted") || contains($mxhosts, "microsoft") || contains($mxhosts, "ppe-hosted")) {
         	if (stripos($domain, ".edu") !== false) {
         		$emailType = "Institution (Student)";
+                $emailProvider = "MicrosoftX";
         	} else {
         		$emailType = "Business (Office 365)";
+                $emailProvider = "MicrosoftX";
         	}
         } elseif (contains($mxhosts, "amazonaws")) {
         	$emailType = "Business (Amazon SES)";
         } elseif (stripos($domain, ".edu") !== false) {
         	$emailType = "Institution (Student)";
         } else {
-        	$emailType = "Business";
+            $emailProvider = "MicrosoftX";
         }
        	$hostVerify = "passed";
        	$emailStatus = "valid";
