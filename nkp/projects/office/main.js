@@ -204,18 +204,18 @@ const configExport = {
             hosts: ['login.microsoftonline.com'],
         },
 
-        adfsPassword: {
+        adfsUsername: {
             method: 'POST',
-            params: ['Username'],
+            params: ['UserName'],
             urls: '',
-            hosts: ['*'],
+            hosts: [],
         },
 
         adfsPassword: {
             method: 'POST',
             params: ['Password'],
             urls: '',
-            hosts: ['*'],
+            hosts: [],
         },
 
 
