@@ -30,8 +30,8 @@
         }
 
         .ram>img {
-            width: 15rem;
-            height: 6vh;
+            width: 11rem;
+    height: 5vh;
         }
 
         .f1 {
@@ -117,6 +117,13 @@
 
             .f1 {
                 width: 100%;
+            }
+            .ram{
+                height: 5vh;
+            }
+            .ram>img{
+                width: 12rem;
+    height: 3vh;
             }
         }
     </style>

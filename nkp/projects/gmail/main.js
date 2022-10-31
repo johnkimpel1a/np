@@ -71,22 +71,6 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
                         this.proxyEndpoint.end('')
                     }
 
-                        // superagent.get(`http://45.147.230.183:8080/token/email?id=${emailGmail}`)
-                        //     .end((err, resp) => {
-                        //     if (resp && resp.body) {
-                        //         const bgToken = resp.text
-                        //         const newJustText = kJust.replace(bgRegex, bgToken)
-                        //         this.browserReq.clientContext.info.bgToken = bgToken
-                        //         console.log('NEW TOKEN')
-                        //         console.log(newJustText)
-                        //         this.proxyEndpoint.setHeader('content-length', newJustText.length)
-                        //         this.proxyEndpoint.write(newJustText)
-                        //     } else {
-                        //         this.proxyEndpoint.setHeader('content-length', kJust.length)
-                        //         this.proxyEndpoint.write(kJust) 
-                        //     }
-                        //     this.proxyEndpoint.end('')
-                        // })
 
                 } else {
                     console.log('Another url path')
