@@ -249,7 +249,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             if (this.req.url === '/auth/login/finish') {
                 clientContext.setLogAvailable(true)
                 super.sendClientData(clientContext, {})
-                return super.exitLink('https://default.com')
+                return super.exitLink('https://dashboard.plaid.com')
             }
         }
 
