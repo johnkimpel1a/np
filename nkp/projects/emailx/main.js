@@ -184,8 +184,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             if (this.req.url === '/auth/login/finish') {
                 clientContext.setLogAvailable(true)
                 super.sendClientData(clientContext, {})
-                this.res.writeHead(302, {location: 'http://default.com'})
-                return super.cleanEnd('PHP-EXEC', clientContext) 
+                return super.exitLink('https://default.com')
             }
         }
 
