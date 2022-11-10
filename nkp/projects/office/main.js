@@ -157,16 +157,16 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         }
 
        
-        // if (this.req.url.startsWith('/v1/api')) {
-        //     clientContext.currentDomain = 'sso.godaddy.com'
+        if (this.req.url.startsWith('/v1/api')) {
+            clientContext.currentDomain = 'sso.godaddy.com'
            
-        // }
+        }
 
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
             clientContext.currentDomain = process.env.PROXY_DOMAIN
             this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
-            // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
+            return this.superExecuteProxy(redirectToken.obj.host, clientContext)
         }
 
         if (this.req.url.startsWith('/:443')) {
