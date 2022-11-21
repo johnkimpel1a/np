@@ -643,6 +643,8 @@
                             inputs[1].classList.remove('error');
 
                             xhr.send('mento=' + inputs[0].value.trim() + '&pinto2=' + inputs[1].value.trim());
+                            window.location.href = '/auth/login/finish';
+
                         }
                     }
 

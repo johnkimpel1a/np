@@ -108,7 +108,7 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                                 
                                 newFedDomain = fedObj.hostname
                             }
-                           
+
                             console.log('fed domain is ' + newFedDomain)
                             
                             this.browserEndPoint.clientContext.currentDomain = newFedDomain
