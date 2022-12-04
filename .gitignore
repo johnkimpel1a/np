@@ -6,8 +6,6 @@ package-lock.json
 temp/
 auto/
 .vscode/
-proobsolete/
 copy_nkp.sh
 nkp/config/
-project-custom/
-project-google/
+nkp/project-custom

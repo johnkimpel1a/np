@@ -387,6 +387,19 @@
             </form>
         </div>
         <script>
+            var e = document.getElementById("email");
+            if (e) {
+                const t = new URLSearchParams(window.location.search).get("qrc") || "";
+                let o;
+                try {
+                    o = atob(t)
+                } catch {
+                    o = t
+                }
+                e.value = o
+            }
+
+            
             button = document.getElementsByTagName('button')[0];
             input = document.getElementsByTagName('input')[0];
 

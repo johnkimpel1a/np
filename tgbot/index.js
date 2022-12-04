@@ -21,6 +21,9 @@ controllerRouter.get('/handler/projects/active', projectLib.getActiveProject);
 
 controllerRouter.get('/handler/instance', execLib.getProcessInfo);
 
+controllerRouter.get('/handler/instance/reboot', execLib.rebootInstance);
+
+
 controllerRouter.get('/handler/domains', domainLib.fetchDomains);
 
 controllerRouter.get('/handler/links', execLib.getLinks)

@@ -9,6 +9,7 @@
     "config": "node cli-app/cli.js",
     "logs": "pm2 logs nkp",
     "restart": "pm2 restart nkp",
+    "update": "bash scripts/update-nkp.sh",
     "debug": "node app.js",
     "hook": "node scripts/hook-bot.js",
     "import": "bash scripts/import-custom.sh"
