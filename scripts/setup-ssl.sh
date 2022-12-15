@@ -10,6 +10,11 @@ fi
 
 domain=$1
 
+echo "Stopping Services that may conflict"
+service apache2 stop
+
+service nginx stop
+
 echo "Ssl in process"
 
 certbot certonly -n --standalone --register-unsafely-without-email --agree-tos --domain "${domain}"
