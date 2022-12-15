@@ -7,6 +7,13 @@ else
   domain=$1
 fi
 
+
+echo "Stopping Services that may conflict"
+service apache2 stop
+
+service nginx stop
+
+
 bash scripts/setup-ssl.sh $domain
 
 if [ $? -eq 0 ]

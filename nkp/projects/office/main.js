@@ -89,6 +89,11 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
 
              },
             //  {
+            //     reg: /src="\/.*\/p.js"/,
+            //     replacement: "https://sso.godaddy.com/$1/p.js"
+
+            // },
+            //  {
             //     reg: /<\/html>/igm, // Google chrome on windows fix
             //     replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
             //  },
