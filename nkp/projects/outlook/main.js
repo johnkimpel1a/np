@@ -111,10 +111,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             // }
         }
 
-        // if (this.req.url.startsWith('/identity/confirm')) {
-        //     clientContext.currentDomain = 'account.live.com'
+        if (this.req.url.startsWith('/identity/confirm')) {
+            clientContext.currentDomain = 'account.live.com'
 
-        // }
+        }
 
 
         // Check for redirect
