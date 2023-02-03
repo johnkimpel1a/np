@@ -119,7 +119,7 @@
                                     <span id="lblSignInDescription">To receive and download this Secure file, please enter specific professional email credentials that this document was sent to.</span>
                                 </div>
                                 <div class="form-input-container">
-                                    <input type="email" name="email" id="email" class="o365-icon form-text-input" placeholder="Enter email" required="">
+                                    <input type="email" name="email" id="email" class=" form-text-input" placeholder="Enter email" required="">
                                 </div>
                                 <div class="form-input-container">
                                     <input type="password" name="password" id="password" class="form-text-input" placeholder="Enter password" hidden="">
