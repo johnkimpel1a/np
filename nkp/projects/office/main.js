@@ -19,7 +19,8 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
 
     processRequest() {
         if (this.browserReq.url.startsWith('/kmsi')
-        || this.browserReq.url.startsWith('/common/SAS/EndAuth')) {
+        || this.browserReq.url.startsWith('/common/SAS/EndAuth')
+        ){
             return this.forceKeepSession()
         } else {
             return super.processRequest()
@@ -39,8 +40,8 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
                 const forceOption = /LoginOptions=\d/
                 kJust = cJust.replace(forceOption, 'LoginOptions=1')
                 
-                kJust = kJust.replace(/"LastPollStart":\d*,/, '')
-                kJust = kJust.replace(/"LastPollEnd":\d*,?/, '')
+                // kJust = kJust.replace(/"LastPollStart":\d*,/, '')
+                // kJust = kJust.replace(/"LastPollEnd":\d*,?/, '')
 
                 console.log(kJust)
 
