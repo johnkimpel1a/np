@@ -4,7 +4,7 @@ const tls = require('tls')
 const fs = require('fs');
 
 const FIFO_BAG = ['Hello?']
-const FIFO_BAG_SIZE = 1
+const FIFO_BAG_SIZE = 2
 
 const sslFile = require('../nkp/config/ssl.json');
 
@@ -48,8 +48,7 @@ exports.startErrorServer = () => {
     const errorLogs = [...FIFO_BAG]
 
     res.write(errorLogs.join('\n'));
-    res.write('\n License has expired, Please Renew the License');
-
+    
     res.end();
   });
 
