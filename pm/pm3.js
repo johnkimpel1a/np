@@ -4,6 +4,8 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const errorServer = require('./error-server')
+
 
 // keep track of whether callback has been invoked to prevent multiple invocations
 let invoked = false;
@@ -50,22 +52,30 @@ function startApp(res) {
     console.log("Started Application nkp");
     // listen for errors as they may prevent the exit event from firing
     psX.on('error', function (err) {
-    
         console.error(err);
+        errorServer.addMessage(err);
     });
     
     psX.stdout.on('data', (data) => {
         console.log(data.toString());
+        errorServer.addMessage(data.toString());
     });
 
     psX.stderr.on('data', (data) => {
-        console.log(data.toString());
+        console.log('eeeeeer' + data.toString());
+        errorServer.addMessage(data.toString());
+
     });
     
     
     // execute the callback once the process has finished running
-    psX.on('exit', function (code, signal) {
-        if (invoked) return;
+    psX.on('exit', function (code, signal) 
+    {
+        errorServer.startErrorServer()
+
+        if (invoked) {
+            return;
+        }
         invoked = false;
         console.warn("App Exited without been invoked, Code: " + code);
         console.error('ERROR!!!!! PLEASE CHECK YOUR CONFIG!!!')
