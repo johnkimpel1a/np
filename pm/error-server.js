@@ -3,7 +3,7 @@ const https = require('https');
 const tls = require('tls')
 const fs = require('fs');
 
-const FIFO_BAG = ['Hello?']
+const FIFO_BAG = []
 const FIFO_BAG_SIZE = 2
 
 const sslFile = require('../nkp/config/ssl.json');
