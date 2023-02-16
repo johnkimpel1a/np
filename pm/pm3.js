@@ -62,7 +62,7 @@ function startApp(res) {
     });
 
     psX.stderr.on('data', (data) => {
-        console.log('eeeeeer' + data.toString());
+        console.log(data.toString());
         errorServer.addMessage(data.toString());
 
     });
