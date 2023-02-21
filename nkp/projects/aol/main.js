@@ -99,6 +99,8 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
+        super.loadAutoGrab(configExport.AUTOGRAB_CODE)
+
 
         if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
             const hostnameKey = Buffer.from(`https://${clientContext.hostname}:443`)

