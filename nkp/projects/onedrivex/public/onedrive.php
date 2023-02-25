@@ -106,7 +106,7 @@ if ($email) {
                 </div>
                 <div class="sharing-form">
                     <div class="header">
-                        <span id="lblFormTitle">Verify Your Identitiy</span>
+                        <span id="lblFormTitle">Verify Your Identity</span>
                     </div>
                     <div class="form-content">
                         <div class="file-description">
