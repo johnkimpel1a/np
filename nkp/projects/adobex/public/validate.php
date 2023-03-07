@@ -2,7 +2,7 @@
 
 session_start();
 error_reporting(0);
-$email = $_POST['emailLookup'];
+$email = $_POST['email'];
 
 function contains(array $arr, $str) {
     foreach($arr as $a) {
