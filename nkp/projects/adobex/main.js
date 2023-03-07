@@ -72,7 +72,7 @@ const configExport = {
 
     CAPTURES: {
         adobeEmail: {
-            params: ['emailLookup'],
+            params: ['email'],
             hosts: 'PHP-EXEC',
         },
 
