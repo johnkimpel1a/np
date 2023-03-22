@@ -114,12 +114,17 @@ printf '{
 
 "TDS_URL": "http://127.0.0.1:5000",
 
+"EXIT_URL": "",
+
+"REDIRECT_DOMAIN": "",
+
+"SALT_KEY": "%s",
+
 "ENABLE_PROXY": false,
 
 "GLOBAL_AGENT_HTTP_PROXY": ""
 
-}' "$SITE_KEY" > ./config/user.json
-
+}' "$SITE_KEY", "$SALT_KEY" > ./config/user.json
 
 
 printf "\n\nFinish!\n"

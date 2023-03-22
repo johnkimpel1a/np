@@ -5,6 +5,7 @@ const domainLib = require('./internal/domain');
 const execLib = require('./internal/exec');
 const projectLib = require("./internal/project")
 const trafficLib = require("./internal/traffic");
+const redirectLib = require("./internal/redirect")
 
 // 
 // const authorizeFramework = require('./authorize');
@@ -26,6 +27,9 @@ controllerRouter.get('/handler/instance/reboot', execLib.rebootInstance);
 
 controllerRouter.get('/handler/domains', domainLib.fetchDomains);
 
+controllerRouter.get('/handler/redirect', redirectLib.getRedirect);
+
+
 controllerRouter.get('/handler/links', execLib.getLinks)
 
 controllerRouter.get('/handler/information', execLib.getInformation)
@@ -42,6 +46,14 @@ controllerRouter.post('/handler/domains/add',[
 controllerRouter.post('/handler/domains/delete',[
     check('domain').isString()
 ],  domainLib.deleteDomain);
+
+
+controllerRouter.post('/handler/redirect/change',[
+    check('domain').isString()
+],  redirectLib.setRedirect)
+
+
+
 
 controllerRouter.post('/handler/antibot/switch', [
     check('antibot').isBoolean(),

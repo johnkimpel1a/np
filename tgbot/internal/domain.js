@@ -17,12 +17,19 @@ exports.fetchDomains = (req, res) => {
     
     const sslFileObj = JSON.parse(fs.readFileSync('./nkp/config/ssl.json'))
     const domainNameList = []
+    let redirectDomain
 
-    sslFileObj.forEach(sslInfo => domainNameList.push(sslInfo.domain))
+    sslFileObj.forEach(sslInfo => {
+        if (sslInfo.isRedirect) {
+            redirectDomain = sslInfo.domain
+        } 
+        domainNameList.push(sslInfo.domain)
+    })
 
     const domainInfo = {
         ip: process.env.HOST_IP,
         domains: domainNameList,
+        redirect: redirectDomain
     }
     return res.json({
         status: "Success",
@@ -40,7 +47,8 @@ exports.addDomain = (req, res) => {
     if (hasErrors) {
             return res.status(402).json(vResult.errors);
     }
-    const domainName = req.body.domain
+    let domainName = req.body.domain
+    domainName = domainName.toLowerCase();
 
     // if (!isValidDomain(domainName)) {
     //     return res.json({
@@ -112,11 +120,15 @@ exports.deleteDomain = (req, res) => {
     if (hasErrors) {
             return res.status(402).json(vResult.errors);
     }
-    const domainName = req.body.domain
+
+    let domainName = req.body.domain
+    domainName = domainName.toLowerCase();
 
 
     let sslFileObj = JSON.parse(fs.readFileSync('./nkp/config/ssl.json'))
-    if (!domainName in sslFileObj) {
+    const domainValueList = sslFileObj.map(obj => obj.domain);
+
+    if (domainValueList.indexOf(domainName) === -1) {
         console.error('Domain does not exists')
         return res.json({
             status: "Error",

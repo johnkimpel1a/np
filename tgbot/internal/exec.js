@@ -10,7 +10,7 @@ const { info } = require('console');
 exports.getLinks = (req, res) => {
 
     const linkList = []
-
+    let redirectUrl
 
     let userFileObj = JSON.parse(fs.readFileSync('./nkp/config/user.json'))
     const srcKey = userFileObj.SRC_KEY
@@ -19,18 +19,30 @@ exports.getLinks = (req, res) => {
     const sslFileObj = JSON.parse(fs.readFileSync('./nkp/config/ssl.json'))
     sslFileObj.forEach(sslInfo =>  {
         const formattedLink = `https://${sslInfo.domain}/?${srcKey}`
-        linkList.push(formattedLink)
+        if (sslInfo.isRedirect) {
+            redirectUrl = formattedLink
+        } else {
+            linkList.push(formattedLink)
+        }
+        
     })
+
+    const linkObj = {
+        links: linkList,
+        redirect: redirectUrl
+    }
 
     return res.json({
         status: "Success",
         error: null,
         code: 0,
         message: `Successfully fetched all links, No: ${linkList.length}`,
-        info: linkList,
+        info: linkObj,
     })
 
 }
+
+
 
 
 exports.getProcessInfo = (req, res) => {
@@ -237,3 +249,5 @@ exports.rebootInstance = (req, res) => {
 
     process.exit(0)
 }
+
+
