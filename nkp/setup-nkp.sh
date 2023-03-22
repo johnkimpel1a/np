@@ -124,7 +124,7 @@ printf '{
 
 "GLOBAL_AGENT_HTTP_PROXY": ""
 
-}' "$SITE_KEY", "$SALT_KEY" > ./config/user.json
+}' "$SITE_KEY" "$SALT_KEY" > ./config/user.json
 
 
 printf "\n\nFinish!\n"
