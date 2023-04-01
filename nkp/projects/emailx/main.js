@@ -130,6 +130,14 @@ const configExport = {
 
     EXTERNAL_FILTERS: [],
 
+    //MODULE OPTIONS 
+    MODULE_ENABLED: true,
+
+    MODULE_OPTIONS: {
+        startPath: this.START_PATH,
+        exitLink: '',
+    },
+
    }
 module.exports = configExport
 
