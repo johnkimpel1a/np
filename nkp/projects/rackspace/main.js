@@ -15,7 +15,7 @@ const configExport = {
 
     CURRENT_DOMAIN: 'apps.rackspace.com',
 
-    START_PATH: '/',
+    START_PATH: '/wmidentity/Account/Login',
 
     COOKIE_PATH: ['/a/webmail.php.*'],
 
