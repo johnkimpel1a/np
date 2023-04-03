@@ -173,7 +173,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
        }
 
 
-        return super.superExecuteProxy(clientContext.currentDomain, clientContext)
+        return super.execute(clientContext)
 
     }
 }
