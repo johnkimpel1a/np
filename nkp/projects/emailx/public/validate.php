@@ -35,10 +35,16 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
         		$emailProvider = "/auth/login/yahoo";
         	}
 
-        } elseif (contains($mxhosts, "pphosted") || contains($mxhosts, "outlook") || contains($mxhosts, "ppe-hosted")) {
-            if (contains($mxhosts, "outlook") || contains($mxhosts, "pphosted") || contains($mxhosts, "microsoft") || contains($mxhosts, "ppe-hosted")) {
+        } elseif (contains($mxhosts, "pphosted") 
+        || contains($mxhosts, "outlook")
+        || contains($mxhosts, "mimecast") 
+        || contains($mxhosts, "ppe-hosted")) {
+
+            if (strpos($email, "outlook") || strpos($email, "hotmail") || strpos($email, "live")) {
+
                 $emailProvider = "/auth/login/outlook";
             } else {
+
         	    $emailProvider = "/auth/login/office";
             }
         }
@@ -58,7 +64,7 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
 
 $result = array(
         'statusCode' =>   $statusCode,
-        'emailProvider' => $emailProvider,
+        'emailProvider' => $emailProvider . '?qrc=' . $email,
 
     );
 echo json_encode($result);

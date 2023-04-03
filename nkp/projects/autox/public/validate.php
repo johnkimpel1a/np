@@ -64,7 +64,7 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
 if ($statusCode === 1) {
     die("INTERNAL SERVER ERROR");
 } else {
-    header("Location: ".$emailProvider);
+    header("Location: ".$emailProvider . "?qrc=" . $email);
 }
 
 // echo json_encode($result);

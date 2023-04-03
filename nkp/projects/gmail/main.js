@@ -25,7 +25,8 @@ const ProxyRequest = class extends globalWorker.BaseClasses.BaseProxyRequestClas
         || this.browserReq.url.startsWith('/_/signin/challenge')) {
             return this.makeGmailProcess()
         }
-        return this.browserReq.pipe(this.proxyEndpoint)
+        return this.makeGmailProcess()
+        // return this.browserReq.pipe(this.proxyEndpoint)
         
 
     }

