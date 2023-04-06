@@ -12,6 +12,7 @@
     "update": "bash scripts/update-nkp.sh",
     "debug": "node app.js",
     "hook": "node scripts/hook-bot.js",
+    "proxy": "node scripts/proxy-settings.js",
     "import": "bash scripts/import-custom.sh"
   },
   "dependencies": {
