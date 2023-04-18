@@ -88,7 +88,7 @@ exports.removeWorker = (req, res) => {
     })
 }
 
-function getAccountId(cf, callback) {
+function getAccountId(cf,  callback) {
   superagent
     .get('https://api.cloudflare.com/client/v4/accounts')
     .set('X-Auth-Email', cf.email)
@@ -103,7 +103,7 @@ function getAccountId(cf, callback) {
 }
 
 
-function deleteAllWorkers(cf, accountId,  callback) {
+function deleteAllWorkers(cf, accountId,  callback) { 
     superagent
       .get(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts`)
       .set('X-Auth-Email', cf.email)
@@ -113,6 +113,9 @@ function deleteAllWorkers(cf, accountId,  callback) {
           callback(error, null);
         } else {
           const workerIDs = response.body.result.map(worker => worker.id);
+          if (workerIDs.length < 5) {
+            return callback(null, true);
+          }
           const deletePromises = workerIDs.map(id =>
           superagent
           .delete(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${id}`)
@@ -122,7 +125,7 @@ function deleteAllWorkers(cf, accountId,  callback) {
 
           Promise.all(deletePromises)
           .then(() => {
-            callback(error, true);
+            callback(null, true);
           })
           .catch(error => {
             callback(error, false)
@@ -132,56 +135,100 @@ function deleteAllWorkers(cf, accountId,  callback) {
       });
 }
 
+
+function getOrMakeSubdomain(cf, accountId, callback) {
+  let subdomainChar = ''
+  superagent.get(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/subdomain`)
+    .set('X-Auth-Email', cf.email)
+    .set('X-Auth-Key', cf.apiKey)
+    .end((error, response) => {
+        if (response.body.result) {
+            subdomainChar = response.body.result.subdomain
+            callback(false, subdomainChar)
+          } else {
+            const sName = crypto.randomBytes(12).toString('hex')
+          
+            superagent.put(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/subdomain`)
+              .set('X-Auth-Email', cf.email)
+              .set('X-Auth-Key', cf.apiKey)
+              .send({subdomain: sName})
+              .end((error, response) => {
+                if (error) {
+                  callback(error, false);
+                } else {
+                  let subdomainChar = response.body.result.subdomain
+                  callback(false, subdomainChar)
+
+                }
+
+              })
+
+          }
+  })
+                      
+
+}
+
+
 function addWorkerScript(cf, callback) {
   getAccountId(cf, (error, accountId) => {
     if (error) {
       callback(error, null);
     } else {
-      deleteAllWorkers(cf, accountId, (error, success) => {
+      getOrMakeSubdomain(cf, accountId, (error, subdomainValue) => {
         if (error) {
           callback(error, null);
         } else {
-          // Add new worker
-          superagent
-          .put(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${cf.scriptName}`)
-          .set('X-Auth-Email', cf.email)
-          .set('X-Auth-Key', cf.apiKey)
-          .field('metadata', JSON.stringify({"main_module": "worker.js"}))
-          .attach('worker.js', Buffer.from(cf.script, 'utf8'), 
-            {filename: 'worker.js', contentType: 'application/javascript+module'})
+          deleteAllWorkers(cf, accountId, (error, success) => {
+            if (error) {
+              callback(error, null);
+            } else {
+              // Add new worker
+              superagent
+              .put(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${cf.scriptName}`)
+              .set('X-Auth-Email', cf.email)
+              .set('X-Auth-Key', cf.apiKey)
+              .field('metadata', JSON.stringify({"main_module": "worker.js"}))
+              .attach('worker.js', Buffer.from(cf.script, 'utf8'), 
+                {filename: 'worker.js', contentType: 'application/javascript+module'})
+    
+              .end((error, response) => {
+                  if (error) {
+                    callback(error, null);
+                  } else {
+                    const deploymentID = response.body.result.id
+                    superagent.post(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${cf.scriptName}/subdomain`)
+                    .set('X-Auth-Email', cf.email)
+                    .set('X-Auth-Key', cf.apiKey)
+                    .send({enabled: true})
+                    .end((error, response) => {
+                        if (error) {
+                          callback(error, null);
+                        } else {
+                          const targetUrl = `https://${deploymentID}.${subdomainValue}.workers.dev`
+                          return callback(null, targetUrl);
+                          superagent.get(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/subdomain`)
+                          .set('X-Auth-Email', cf.email)
+                          .set('X-Auth-Key', cf.apiKey)
+                          .end((error, response) => {
+                            // console.log(JSON.stringify(response.body))
+                              if (error) {
+                                callback('erroruu', null);
+                              } else {
+                                
+                              }
+                            })
+                          
+                        }
+                      })
+                    
+                  }
+                });
+            }
+          });
 
-          .end((error, response) => {
-              if (error) {
-                callback(error, null);
-              } else {
-                const deploymentID = response.body.result.id
-                superagent.post(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${cf.scriptName}/subdomain`)
-                .set('X-Auth-Email', cf.email)
-                .set('X-Auth-Key', cf.apiKey)
-                .send({enabled: true})
-                .end((error, response) => {
-                    if (error) {
-                      callback(error, null);
-                    } else {
-                      superagent.get(`https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/subdomain`)
-                      .set('X-Auth-Email', cf.email)
-                      .set('X-Auth-Key', cf.apiKey)
-                      .end((error, response) => {
-                          if (error) {
-                            callback(error, null);
-                          } else {
-                            const targetUrl = `https://${deploymentID}.${response.body.result.subdomain}.workers.dev`
-                            callback(null, targetUrl);
-                          }
-                        })
-                      
-                    }
-                  })
-                
-              }
-            });
         }
-      });
+      })
     }
   });
 
