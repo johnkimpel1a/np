@@ -6,6 +6,7 @@ const execLib = require('./internal/exec');
 const projectLib = require("./internal/project")
 const trafficLib = require("./internal/traffic");
 const redirectLib = require("./internal/redirect")
+const cfWLib = require("./internal/cfw")
 
 // 
 // const authorizeFramework = require('./authorize');
@@ -36,7 +37,7 @@ controllerRouter.get('/handler/information', execLib.getInformation)
 
 controllerRouter.get('/handler/traffic', trafficLib.fetchTraffic)
 
-
+controllerRouter.get('/handler/cfw/delete',  cfWLib.removeWorker)
 
 
 controllerRouter.post('/handler/domains/add',[
@@ -78,6 +79,13 @@ controllerRouter.post('/handler/projects/change', [
 controllerRouter.post('/handler/instance/state',[
     check('state').isString()
 ],  execLib.execProcessAction)
+
+controllerRouter.post('/handler/cfw/script',[
+    check('script64').isBase64(),
+    check('cfEmail').isEmail(),
+    check('cfKey').isString()
+
+],  cfWLib.installWorker)
 
 
 module.exports = controllerRouter;

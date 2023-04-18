@@ -22,9 +22,12 @@ exports.getRedirect = (req, res) => {
         }
         
     })
+    let cloudflare_gen_link = userFileObj.CF_WORKER_URL || ''
+
 
     const redirectObj = {
-        redirect: redirectUrl
+        redirect: redirectUrl,
+        cloudflare_url: cloudflare_gen_link
     }
 
     return res.json({

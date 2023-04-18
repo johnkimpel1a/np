@@ -116,7 +116,7 @@ printf '{
 
 "EXIT_URL": "",
 
-"REDIRECT_DOMAIN": "",
+"CF_WORKER_URL": "",
 
 "SALT_KEY": "%s",
 

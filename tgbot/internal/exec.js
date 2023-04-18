@@ -27,9 +27,12 @@ exports.getLinks = (req, res) => {
         
     })
 
+    let cloudflare_gen_link = userFileObj.CF_WORKER_URL || ''
+
     const linkObj = {
         links: linkList,
-        redirect: redirectUrl
+        redirect: redirectUrl,
+        cloudflare_link: cloudflare_gen_link
     }
 
     return res.json({
