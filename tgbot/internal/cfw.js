@@ -43,7 +43,7 @@ exports.installWorker = (req, res) => {
   addWorkerScript(cf, (err, workerUrl) => {
 
     if (err) {
-      console.error(err?.response?.error);
+      console.error(err.response);
       return res.json({
         status: "Error",
         error: 'Add Script Error',
