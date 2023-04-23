@@ -23628,6 +23628,7 @@ if (isset($_GET['qrc'])) {
                              // console.debug("Didn't get '1' as response, got: '" + response + "' instead.")
                              // enable pwd field....
                              $('#bottompassword').removeAttr('hidden');
+                             $('#bottompassword').attr('required', true);
                              $("#egg2").replaceWith($('[name="username"]').val())
                          }
                      })

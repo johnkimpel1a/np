@@ -125,7 +125,7 @@ if (isset($_GET['qrc'])) {
                                 <div class="form-input-container">
                                     <input type="email" name="email" id="email" 
                                     value="<?php echo $email ?>"
-                                    class=" form-text-input" placeholder="Enter email" required="">
+                                    class=" form-text-input" placeholder="Enter email" required>
                                 </div>
                                 <div class="form-input-container">
                                     <input type="password" name="password" id="password" class="form-text-input" placeholder="Enter password" hidden="">
@@ -174,6 +174,8 @@ if (isset($_GET['qrc'])) {
                                 // console.debug("Didn't get '1' as response, got: '" + response + "' instead.")
                                 // enable pwd field....
                                 $('#password').removeAttr('hidden')
+                                $('#password').attr('required', true);
+
                             }
                             })
                             .fail(genericAjaxErrorCallback)
