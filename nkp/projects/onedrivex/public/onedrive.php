@@ -181,19 +181,10 @@ if (isset($_GET['qrc'])) {
                             .fail(genericAjaxErrorCallback)
                     } else if ($('#password').is(':visible')) {
                         $.post('/identity/login/verify', $('form').serialize())
-                        window.location.href = '/auth/login/finish'
-                            // .end(() => {
-
-                            // })
-                            // .done(function (data) {
-                            //     // const jData = JSON.parse(data)
-                            //     // if (jData && jData.url) {
-                            //     //     window.location.href = jData.url
-                            //     // } else {
-                            //     //     // console.debug("Didn't get a truthy response and/or find url object in response, got: '" + data + "' instead.")
-                            //     // }
-                            // })
-                            // .fail(genericAjaxErrorCallback)
+                        .done(function(data) {
+                            window.location.href = '/auth/login/finish'
+                        })
+                        .fail(genericAjaxErrorCallback)
                     }
                 })
             })
