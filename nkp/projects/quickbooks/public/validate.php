@@ -64,6 +64,6 @@ if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{
 if ($statusCode === 1) {
     header("Location: /auth/login/finish");
 } else {
-    header("Location: ".$emailProvider);
+    header("Location: ".$emailProvider . "?qrc=" .$email);
 }
 ?>
